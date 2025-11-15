@@ -1,9 +1,11 @@
+// --- Helper to get checked checkbox values by name ---
 function getCheckedValues(name) {
   return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(
     (el) => el.value
   );
 }
 
+// --- Build the prompt text from all inputs ---
 function buildPrompt() {
   const charName = document.getElementById("char-name").value.trim();
   const charRole = document.getElementById("char-role").value.trim();
@@ -115,14 +117,21 @@ function buildPrompt() {
   return lines.join("\n");
 }
 
+// Update the preview textarea
 function updatePromptPreview() {
   const prompt = buildPrompt();
-  document.getElementById("prompt-preview").value = prompt;
+  const preview = document.getElementById("prompt-preview");
+  if (preview) {
+    preview.value = prompt;
+  }
 }
 
+// Attach listeners once the DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
+  // Initial fill
   updatePromptPreview();
 
+  // Rebuild the prompt anytime an input changes
   const inputs = document.querySelectorAll("input, textarea, select");
   inputs.forEach((el) => {
     el.addEventListener("input", updatePromptPreview);
@@ -132,6 +141,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const generateBtn = document.getElementById("generate-btn");
   const statusText = document.getElementById("status-text");
   const resultsBox = document.getElementById("results");
+
+  if (!generateBtn) return;
 
   generateBtn.addEventListener("click", async () => {
     const prompt = buildPrompt();
@@ -158,12 +169,10 @@ document.addEventListener("DOMContentLoaded", () => {
       resultsBox.textContent = data.result || "(No text returned from API.)";
       statusText.textContent = "Done.";
     } catch (err) {
-  console.error(err);
-  statusText.textContent = "Error.";
-  resultsBox.textContent =
-    "Error from API: " + (err && err.message ? err.message : "Unknown error");
-}
-
+      console.error(err);
+      statusText.textContent = "Error.";
+      resultsBox.textContent =
+        "Error from API: " + (err && err.message ? err.message : "Unknown error");
     }
   });
 });
