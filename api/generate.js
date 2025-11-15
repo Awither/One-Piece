@@ -14,16 +14,24 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { prompt } = req.body || {};
+    const { prompt, model } = req.body || {};
 
     if (!prompt || typeof prompt !== "string") {
       res.status(400).json({ error: "Missing or invalid 'prompt' field" });
       return;
     }
 
+    // Decide which model to use, with a safe whitelist
+    const allowedModels = ["gpt-4.1-mini", "gpt-4.1", "gpt-5.1"];
+    let modelName = "gpt-4.1-mini";
+
+    if (allowedModels.includes(model)) {
+      modelName = model;
+    }
+
     // Call OpenAI
     const response = await client.responses.create({
-      model: "gpt-5.1",
+      model: modelName,
       input: [
         {
           role: "system",
@@ -58,10 +66,8 @@ module.exports = async (req, res) => {
 
     res.status(200).json({ result: text });
   } catch (err) {
-    // Log full error server-side
     console.error("Error calling OpenAI:", err);
 
-    // Send back the actual message so the browser can show it
     res.status(500).json({
       error:
         "OPENAI_ERROR: " +
