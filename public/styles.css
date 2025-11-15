@@ -1,476 +1,408 @@
-:root {
-  --bg: #05060a;
-  --bg-elevated: #10121a;
-  --border-subtle: #25293a;
-  --accent: #f97316;
-  --accent-soft: rgba(249, 115, 22, 0.1);
-  --text-primary: #f9fafb;
-  --text-muted: #9ca3af;
-  --radius-lg: 18px;
-  --radius-md: 12px;
-  --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: radial-gradient(circle at top, #111827 0, #020617 55%);
-  color: var(--text-primary);
-  min-height: 100vh;
-}
-
-.app-root {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 12px 16px 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.app-header {
-  text-align: center;
-  padding: 12px 8px 4px;
-}
-
-.app-header h1 {
-  margin: 0 0 6px;
-  letter-spacing: 0.05em;
-  font-size: 1.6rem;
-}
-
-.app-header p {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
-.app-main {
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-  gap: 16px;
-  align-items: flex-start;
-}
-
-.panel {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.card {
-  background: linear-gradient(145deg, #020617, #020617, #030712);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-subtle);
-  padding: 12px 12px 10px;
-  box-shadow: var(--shadow-soft);
-}
-
-.card h2 {
-  margin: 0 0 6px;
-  font-size: 1.05rem;
-}
-
-.hint {
-  margin: 0 0 8px;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
-.field-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.checkbox-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 4px 10px;
-  margin-bottom: 6px;
-}
-
-label {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
-label input[type="text"],
-label input[type="number"],
-label select,
-label textarea {
-  font: inherit;
-  border-radius: var(--radius-md);
-  border: 1px solid #1f2937;
-  background: #020617;
-  color: var(--text-primary);
-  padding: 6px 8px;
-  outline: none;
-}
-
-label textarea {
-  resize: vertical;
-}
-
-label input[type="text"]:focus,
-label input[type="number"]:focus,
-label select:focus,
-label textarea:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent-soft);
-}
-
-.checkbox-grid label {
-  flex-direction: row;
-  align-items: center;
-  gap: 6px;
-}
-
-.checkbox-inline {
-  margin-top: 6px;
-  flex-direction: row;
-  align-items: center;
-  gap: 6px;
-}
-
-/* Power level display */
-.power-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.power-level-display {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-}
-
-input[type="checkbox"] {
-  accent-color: var(--accent);
-}
-
-#prompt-preview {
-  width: 100%;
-  border-radius: var(--radius-md);
-  border: 1px solid #1f2937;
-  background: #020617;
-  color: var(--text-primary);
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
-  font-size: 0.8rem;
-  padding: 8px 10px;
-  resize: vertical;
-}
-
-/* Power reference */
-.power-ref summary {
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-
-.power-ref-body {
-  margin-top: 8px;
-}
-
-.power-ref-list {
-  padding-left: 18px;
-  margin: 4px 0;
-  font-size: 0.78rem;
-}
-
-/* Results container – now just a wrapper */
-.results-box {
-  padding: 0;
-  border: none;
-  background: transparent;
-  min-height: 0;
-  white-space: normal;
-}
-
-/* Grid of ability cards */
-.ability-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 12px;
-}
-
-/* Individual ability card */
-.ability-card {
-  border-radius: var(--radius-md);
-  border: 1px solid #1f2937;
-  background: #020617;
-  padding: 8px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-height: 150px;
-}
-
-.ability-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-}
-
-.ability-card-title {
-  font-size: 0.98rem;
-  font-weight: 600;
-}
-
-.ability-card-tag {
-  font-size: 0.7rem;
-  padding: 2px 6px;
-  border-radius: 999px;
-  border: 1px solid #1f2937;
-  background: rgba(249, 115, 22, 0.06);
-  color: var(--text-muted);
-}
-
-.ability-card-summary {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-}
-
-.ability-card-description {
-  font-size: 0.8rem;
-  margin-top: 4px;
-}
-
-.ability-card-mech {
-  margin-top: 6px;
-  font-size: 0.78rem;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 4px 12px;
-}
-
-.ability-card-mech-item {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.ability-card-mech-label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--text-muted);
-}
-
-.ability-card-mech-value {
-  font-size: 0.8rem;
-}
-
-/* Small inline actions inside card */
-.ability-card-actions {
-  margin-top: 6px;
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-/* Toolbar for view + exports */
-.results-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
-
-.view-toggle {
-  display: flex;
-  gap: 6px;
-}
-
-.results-actions {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-/* Saved sets bar */
-.saved-toolbar {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-}
-
-.saved-toolbar select {
-  min-width: 160px;
-}
-
-/* Reusable chip-style buttons */
-.chip {
-  border-radius: 999px;
-  border: 1px solid #374151;
-  padding: 4px 10px;
-  font-size: 0.78rem;
-  background: #020617;
-  color: var(--text-primary);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.chip.small {
-  padding: 3px 8px;
-  font-size: 0.76rem;
-}
-
-.chip.subtle {
-  opacity: 0.8;
-}
-
-.chip.active {
-  border-color: var(--accent);
-  background: rgba(249, 115, 22, 0.1);
-}
-
-.chip:hover {
-  border-color: var(--accent);
-}
-
-/* Table view */
-.results-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.78rem;
-}
-
-.results-table th,
-.results-table td {
-  border: 1px solid #1f2937;
-  padding: 4px 6px;
-}
-
-.results-table th {
-  text-align: left;
-  background: #020617;
-  color: var(--text-muted);
-}
-
-/* Generate button + status */
-.actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
-}
-
-#generate-btn {
-  border-radius: 999px;
-  border: none;
-  padding: 8px 18px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  background: radial-gradient(circle at top left, #fed7aa 0, #f97316 40%, #c2410c 100%);
-  color: #111827;
-  box-shadow: 0 12px 28px rgba(248, 113, 22, 0.35);
-  transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, filter 0.12s ease-out;
-}
-
-#generate-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 18px 40px rgba(248, 113, 22, 0.42);
-  filter: brightness(1.05);
-}
-
-#generate-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 10px 20px rgba(248, 113, 22, 0.3);
-  filter: brightness(0.97);
-}
-
-#status-text {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
-.app-footer {
-  text-align: center;
-  margin-top: 4px;
-}
-
-.app-footer small {
-  color: var(--text-muted);
-  font-size: 0.7rem;
-}
-
-/* Mobile responsiveness */
-@media (max-width: 800px) {
-  .app-root {
-    padding: 8px 10px 24px;
-  }
-
-  .app-main {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .card {
-    padding: 10px 10px 8px;
-  }
-
-  .field-grid,
-  .checkbox-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .ability-card-mech {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-/* Print styles for PDF */
-@media print {
-  body {
-    background: #ffffff;
-    color: #000000;
-  }
-
-  .app-root {
-    max-width: none;
-    padding: 0;
-  }
-
-  .app-header,
-  .panel-inputs,
-  .card:nth-of-type(1),
-  .card:nth-of-type(2),
-  .results-toolbar,
-  .saved-toolbar,
-  #status-text {
-    display: none !important;
-  }
-
-  .panel-output {
-    grid-column: 1 / -1;
-  }
-
-  .card {
-    box-shadow: none;
-    border-radius: 0;
-  }
-
-  .ability-card,
-  .results-table {
-    page-break-inside: avoid;
-  }
-}
-
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Devil Fruit Ability Builder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-root">
+      <header class="app-header">
+        <div class="header-fruit-row">
+          <img src="img/op-fruit.png" alt="Devil Fruit" class="header-fruit" />
+          <div class="header-text">
+            <h1>Devil Fruit Ability Builder</h1>
+            <p>
+              Build custom, cinematic devil-fruit abilities on the fly for your One
+              Piece–style DnD game.
+            </p>
+          </div>
+          <img src="img/op-fruit.png" alt="Devil Fruit" class="header-fruit" />
+        </div>
+      </header>
+
+      <main class="app-main">
+        <!-- LEFT: Inputs -->
+        <section class="panel panel-inputs">
+          <!-- Character Context -->
+          <div class="card">
+            <h2>Character Context</h2>
+            <div class="field-grid">
+              <label>
+                Name
+                <input id="char-name" type="text" placeholder="Elren, Panther, etc." />
+              </label>
+              <label>
+                Combat Role
+                <input
+                  id="char-role"
+                  type="text"
+                  placeholder="Frontline bruiser, sniper, support, etc."
+                />
+              </label>
+            </div>
+            <label>
+              Theme / Vibe
+              <input
+                id="char-theme"
+                type="text"
+                placeholder="Red lightning, gravity-bending, soul flames, etc."
+              />
+            </label>
+            <label>
+              Backstory / Notes
+              <textarea
+                id="char-backstory"
+                rows="3"
+                placeholder="Quick backstory, goals, personality, emotional beats..."
+              ></textarea>
+            </label>
+          </div>
+
+          <!-- Effect Types -->
+          <div class="card">
+            <h2>A. Effect Types ⚔️</h2>
+            <div class="checkbox-grid">
+              <label>
+                <input type="checkbox" name="effectTypes" value="Offense" />
+                Offense (damage, burst, big hits)
+              </label>
+              <label>
+                <input type="checkbox" name="effectTypes" value="Defense" />
+                Defense (barriers, armor, damage reduction)
+              </label>
+              <label>
+                <input type="checkbox" name="effectTypes" value="Support" />
+                Support (buffs, healing, team utility)
+              </label>
+              <label>
+                <input type="checkbox" name="effectTypes" value="Control" />
+                Control (crowd control, traps, positioning)
+              </label>
+              <label>
+                <input type="checkbox" name="effectTypes" value="Utility" />
+                Utility (movement, scouting, information)
+              </label>
+              <label>
+                <input type="checkbox" name="effectTypes" value="Reality-Bending" />
+                Reality-Bending (space, time, gravity, souls)
+              </label>
+            </div>
+            <label>
+              Extra Effect Notes
+              <textarea
+                id="effect-notes"
+                rows="2"
+                placeholder="e.g. one big finisher, one defensive reaction, one team buff…"
+              ></textarea>
+            </label>
+          </div>
+
+          <!-- Devil Fruit Types (box B, with fruit icon) -->
+          <div class="card">
+            <h2 class="fruit-heading">
+              <span>B. Devil Fruit Types 🍇</span>
+              <img
+                src="img/op-fruit.png"
+                alt="Devil Fruit"
+                class="inline-fruit-icon"
+              />
+            </h2>
+            <p class="hint">
+              Select the <strong>categories</strong> of devil fruits involved in this combo
+              (not specific powers like gravity or ice).
+            </p>
+            <div class="checkbox-grid">
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Logia" />
+                Logia (elemental body)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Paramecia" />
+                Paramecia (reality-warping, objects, special rules)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Zoan" />
+                Zoan (animal / hybrid transformation)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Mythical Zoan" />
+                Mythical Zoan (mythic beast / deity)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Ancient Zoan" />
+                Ancient Zoan (prehistoric creatures)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Special" />
+                Special / Unique (weird, hard-to-classify fruits)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Artificial" />
+                Artificial / SMILE-style fruits
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Awakened" />
+                Awakened fruit (environment + body changes)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Hybrid Combo" />
+                Hybrid multi-fruit synergy (multiple powers combined)
+              </label>
+            </div>
+            <label>
+              Extra Fruit Notes
+              <textarea
+                id="fruit-notes"
+                rows="2"
+                placeholder="Specific fruits or combos, e.g. Kaido’s dragon + hormone-style body control + ice-themed flavor."
+              ></textarea>
+            </label>
+          </div>
+
+          <!-- Outcome / Shape (Box C reworked) -->
+          <div class="card">
+            <h2>C. Desired Outcome / Ability Shape 💥</h2>
+            <p class="hint">
+              What do you want the combo to <strong>actually do</strong> in the scene? Pick
+              a few, then use the notes box to specify an exact outcome.
+            </p>
+            <div class="checkbox-grid">
+              <label>
+                <input type="checkbox" name="styleMods" value="Barrier" />
+                Barrier / Shield (block or reduce damage)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Restrain" />
+                Restrain / Bind (immobilize, grapple, root, imprison)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Zone" />
+                Area Denial / Zone (hazardous terrain, control area)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Morphing" />
+                Morphing / Weapon Form (change shape, weaponization)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Overcharge" />
+                Overcharge / Self-Buff (power spike at a cost)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Mobility" />
+                Mobility / Gap Closer / Escape
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Debuff" />
+                Debuff / Weakening (reduce stats, impose conditions)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Explosion" />
+                Explosion / Burst (big AoE damage)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Battlefield Control" />
+                Battlefield Control (push/pull, reposition, knockback)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Signature Finisher" />
+                Signature Finisher (big named move, ultimate)
+              </label>
+            </div>
+            <label>
+              Outcome / Effect Notes
+              <textarea
+                id="style-notes"
+                rows="2"
+                placeholder="Describe the exact outcome you want: e.g. 'A red-lightning dome that blocks a blast and then explodes outward.'"
+              ></textarea>
+            </label>
+          </div>
+
+          <!-- Output Preferences (Box D improved) -->
+          <div class="card">
+            <h2>D. Output Preferences 📜</h2>
+            <div class="field-grid">
+              <label>
+                # of abilities
+                <input id="num-abilities" type="number" min="1" max="6" value="3" />
+              </label>
+              <label>
+                Output style
+                <select id="format-style">
+                  <option value="stat-block">
+                    DnD-style stat block / spell card (compact but structured)
+                  </option>
+                  <option value="minimal">
+                    Very minimal quick reference (shorter text, to the point)
+                  </option>
+                  <option value="cinematic">
+                    Longer, more descriptive & cinematic (extra flavor)
+                  </option>
+                </select>
+              </label>
+            </div>
+
+            <!-- Model choice -->
+            <label>
+              Model / AI power level
+              <select id="model-choice">
+                <option value="gpt-4.1-mini">
+                  Fast & cheap (gpt-4.1-mini) – recommended for most use
+                </option>
+                <option value="gpt-4.1">
+                  Stronger (gpt-4.1) – better quality, higher cost
+                </option>
+                <option value="gpt-5.1">
+                  Max power (gpt-5.1) – requires verified org; may error if not allowed
+                </option>
+              </select>
+            </label>
+
+            <label>
+              Mechanics detail level
+              <select id="mechanics-detail">
+                <option value="simple">
+                  Simple: action type, range, save, damage, and 1–2 core effects
+                </option>
+                <option value="detailed">
+                  Detailed: include conditions, scaling notes, and special rules
+                </option>
+              </select>
+            </label>
+
+            <!-- Preferred DC -->
+            <label>
+              Preferred DC (optional, guideline)
+              <input
+                id="preferred-dc"
+                type="text"
+                placeholder="e.g. 18 or 8 + proficiency + CHA"
+              />
+            </label>
+
+            <!-- Power level number -->
+            <label>
+              Power Level (1–10)
+              <div class="power-row">
+                <input
+                  id="power-level"
+                  type="number"
+                  min="1"
+                  max="10"
+                  value="6"
+                  step="1"
+                />
+                <span id="power-level-display" class="power-level-display">
+                  6 – High
+                </span>
+              </div>
+            </label>
+
+            <label class="checkbox-inline">
+              <input type="checkbox" id="tone-epic" checked />
+              Make the tone epic and anime-cinematic, but keep mechanics usable at the table.
+            </label>
+            <label>
+              Extra Output Notes
+              <textarea
+                id="output-notes"
+                rows="2"
+                placeholder="e.g. one defensive, one offensive, one support; avoid super complex tracking; limit to 5–7 lines per ability."
+              ></textarea>
+            </label>
+          </div>
+        </section>
+
+        <!-- RIGHT: Prompt + Output -->
+        <section class="panel panel-output">
+          <div class="card">
+            <h2>Prompt Preview (auto-built)</h2>
+            <p class="hint">
+              This is exactly what gets sent to ChatGPT. You can copy it if you want to reuse or
+              tweak manually.
+            </p>
+            <textarea id="prompt-preview" readonly rows="14"></textarea>
+          </div>
+
+          <!-- Power level reference -->
+          <div class="card">
+            <details class="power-ref">
+              <summary>Power Level Reference (1–10)</summary>
+              <div class="power-ref-body">
+                <p class="hint">
+                  How power level influences DC, damage, area, effects, and drawbacks.
+                </p>
+                <ul class="power-ref-list">
+                  <li><strong>1:</strong> DC 4–6. Very weak / trivial. 0–1 die or small effect. Mostly utility or soft flavor.</li>
+                  <li><strong>2:</strong> DC 6–7. Very weak but noticeable. 1–2 dice or a light debuff.</li>
+                  <li><strong>3:</strong> DC 7–9. Weak but useful. 1–2 dice + minor rider or small control.</li>
+                  <li><strong>4:</strong> DC 9–11. Solid low-tier move. 2–3 dice, small area or moderate utility.</li>
+                  <li><strong>5:</strong> DC 11–13. Standard PC-level ability. 3–4 dice, decent effect.</li>
+                  <li><strong>6:</strong> DC 13–16. Strong PC or elite enemy move. 4–5 dice or strong control.</li>
+                  <li><strong>7:</strong> DC 16–20. Boss-tier. 6–8 dice, big impact, clear drawback (HP cost, limited uses, etc.).</li>
+                  <li><strong>8:</strong> DC 20–23. Very high. 8–10+ dice or large area with strong conditions; serious drawback.</li>
+                  <li><strong>9:</strong> DC 24–28. Mythic-level. Can do 100+ total damage, large area, multiple riders and lasting effects; heavy drawback.</li>
+                  <li><strong>10:</strong> DC 26–32. Godlike / reality-warping. Encounter-or arc-defining move with huge damage, massive area, multiple conditions and terrain changes; massive drawback.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+
+          <div class="card">
+            <div class="actions">
+              <button id="generate-btn">Generate Abilities</button>
+              <span id="status-text"></span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Generated Abilities 🎴</h2>
+
+            <!-- View / export controls -->
+            <div class="results-toolbar">
+              <div class="view-toggle">
+                <button id="view-cards-btn" class="chip active">Cards</button>
+                <button id="view-table-btn" class="chip">Table</button>
+              </div>
+              <div class="results-actions">
+                <button id="copy-all-btn" class="chip small">Copy All</button>
+                <button id="download-txt-btn" class="chip small">Download Stat Sheet</button>
+                <button id="print-btn" class="chip small">Print / PDF</button>
+              </div>
+            </div>
+
+            <!-- Saved sets (databank) -->
+            <div class="saved-toolbar">
+              <button id="save-set-btn" class="chip small">Save Set</button>
+              <select id="load-set-select">
+                <option value="">Load saved set…</option>
+              </select>
+              <button id="delete-set-btn" class="chip small subtle">
+                Delete
+              </button>
+            </div>
+
+            <div id="results" class="results-box">
+              <p class="hint">
+                Each generated ability will show up in its own card with: name, summary, cinematic
+                description, and key mechanics (range, DC, damage, effect). Switch between card and
+                table view above.
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="app-footer">
+        <small>
+          All on one page. Built for quick use at the table: check boxes, add flavor, press
+          Generate.
+        </small>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
