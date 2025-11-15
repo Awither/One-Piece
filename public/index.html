@@ -260,19 +260,30 @@
 
             <!-- Preferred DC -->
             <label>
-              Preferred DC (optional)
+              Preferred DC (optional, guideline)
               <input
                 id="preferred-dc"
                 type="text"
-                placeholder="e.g. 15 or 8 + proficiency + CHA"
+                placeholder="e.g. 18 or 8 + proficiency + CHA"
               />
             </label>
 
-            <!-- Power level -->
-            <label class="power-level-label">
+            <!-- Power level number -->
+            <label>
               Power Level (1–10)
-              <input id="power-level" type="range" min="1" max="10" value="6" />
-              <span id="power-level-display" class="power-level-display">6 – High</span>
+              <div class="power-row">
+                <input
+                  id="power-level"
+                  type="number"
+                  min="1"
+                  max="10"
+                  value="6"
+                  step="1"
+                />
+                <span id="power-level-display" class="power-level-display">
+                  6 – High
+                </span>
+              </div>
             </label>
 
             <label class="checkbox-inline">
@@ -301,6 +312,30 @@
             <textarea id="prompt-preview" readonly rows="14"></textarea>
           </div>
 
+          <!-- Power level reference -->
+          <div class="card">
+            <details class="power-ref">
+              <summary>Power Level Reference (1–10)</summary>
+              <div class="power-ref-body">
+                <p class="hint">
+                  How power level influences DC, damage, area, effects, and drawbacks.
+                </p>
+                <ul class="power-ref-list">
+                  <li><strong>1:</strong> DC 4–6. Very weak / trivial. 0–1 die or small effect. Mostly utility or soft flavor.</li>
+                  <li><strong>2:</strong> DC 6–7. Very weak but noticeable. 1–2 dice or a light debuff.</li>
+                  <li><strong>3:</strong> DC 7–9. Weak but useful. 1–2 dice + minor rider or small control.</li>
+                  <li><strong>4:</strong> DC 9–11. Solid low-tier move. 2–3 dice, small area or moderate utility.</li>
+                  <li><strong>5:</strong> DC 11–13. Standard PC-level ability. 3–4 dice, decent effect.</li>
+                  <li><strong>6:</strong> DC 13–16. Strong PC or elite enemy move. 4–5 dice or strong control.</li>
+                  <li><strong>7:</strong> DC 16–20. Boss-tier. 6–8 dice, big impact, clear drawback (HP cost, limited uses, etc.).</li>
+                  <li><strong>8:</strong> DC 20–23. Very high. 8–10+ dice or large area with strong conditions; serious drawback.</li>
+                  <li><strong>9:</strong> DC 24–28. Mythic-level. Can do 100+ total damage, large area, multiple riders and lasting effects; heavy drawback.</li>
+                  <li><strong>10:</strong> DC 26–32. Godlike / reality-warping. Encounter-or arc-defining move with huge damage, massive area, multiple conditions and terrain changes; massive drawback.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+
           <div class="card">
             <div class="actions">
               <button id="generate-btn">Generate Abilities</button>
@@ -310,10 +345,36 @@
 
           <div class="card">
             <h2>Generated Abilities</h2>
+
+            <!-- View / export controls -->
+            <div class="results-toolbar">
+              <div class="view-toggle">
+                <button id="view-cards-btn" class="chip active">Cards</button>
+                <button id="view-table-btn" class="chip">Table</button>
+              </div>
+              <div class="results-actions">
+                <button id="copy-all-btn" class="chip small">Copy All</button>
+                <button id="download-txt-btn" class="chip small">Download Stat Sheet</button>
+                <button id="print-btn" class="chip small">Print / PDF</button>
+              </div>
+            </div>
+
+            <!-- Saved sets (databank) -->
+            <div class="saved-toolbar">
+              <button id="save-set-btn" class="chip small">Save Set</button>
+              <select id="load-set-select">
+                <option value="">Load saved set…</option>
+              </select>
+              <button id="delete-set-btn" class="chip small subtle">
+                Delete
+              </button>
+            </div>
+
             <div id="results" class="results-box">
               <p class="hint">
                 Each generated ability will show up in its own card with: name, summary, cinematic
-                description, and key mechanics (range, DC, damage, effect).
+                description, and key mechanics (range, DC, damage, effect). Switch between card and
+                table view above.
               </p>
             </div>
           </div>
@@ -331,3 +392,4 @@
     <script src="script.js"></script>
   </body>
 </html>
+
