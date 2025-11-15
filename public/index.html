@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Devil Fruit Ability Builder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-root">
+      <header class="app-header">
+        <h1>Devil Fruit Ability Builder</h1>
+        <p>
+          Build custom, cinematic devil-fruit abilities on the fly for your One Piece–style DnD game.
+        </p>
+      </header>
+
+      <main class="app-main">
+        <!-- LEFT: Inputs -->
+        <section class="panel panel-inputs">
+          <!-- Character Context -->
+          <div class="card">
+            <h2>Character Context</h2>
+            <div class="field-grid">
+              <label>
+                Name
+                <input id="char-name" type="text" placeholder="Elren, Panther, etc." />
+              </label>
+              <label>
+                Combat Role
+                <input
+                  id="char-role"
+                  type="text"
+                  placeholder="Frontline bruiser, sniper, support, etc."
+                />
+              </label>
+            </div>
+            <label>
+              Theme / Vibe
+              <input
+                id="char-theme"
+                type="text"
+                placeholder="Red lightning, gravity-bending, soul flames, etc."
+              />
+            </label>
+            <label>
+              Backstory / Notes
+              <textarea
+                id="char-backstory"
+                rows="3"
+                placeholder="Quick backstory, goals, personality, emotional beats..."
+              ></textarea>
+            </label>
+          </div>
+
+          <!-- Effect Types -->
+          <div class="card">
+            <h2>A. Effect Types</h2>
+            <div class="checkbox-grid">
+              <label>
+                <input type="checkbox" name="effectTypes" value="Offense" />
+                Offense (damage, burst, big hits)
+              </label>
+              <label>
+                <input type="checkbox" name="effectTypes" value="Defense" />
+                Defense (barriers, armor, damage reduction)
+              </label>
+              <label>
+                <input type="checkbox" name="effectTypes" value="Support" />
+                Support (buffs, healing, team utility)
+              </label>
+              <label>
+                <input type="checkbox" name="effectTypes" value="Control" />
+                Control (crowd control, traps, positioning)
+              </label>
+              <label>
+                <input type="checkbox" name="effectTypes" value="Utility" />
+                Utility (movement, scouting, information)
+              </label>
+              <label>
+                <input type="checkbox" name="effectTypes" value="Reality-Bending" />
+                Reality-Bending (space, time, gravity, souls)
+              </label>
+            </div>
+            <label>
+              Extra Effect Notes
+              <textarea
+                id="effect-notes"
+                rows="2"
+                placeholder="e.g. one big finisher, one defensive reaction, one team buff…"
+              ></textarea>
+            </label>
+          </div>
+
+          <!-- Devil Fruit Traits -->
+          <div class="card">
+            <h2>B. Devil Fruit Traits</h2>
+            <div class="checkbox-grid">
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Logia" />
+                Logia (elemental body)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Paramecia" />
+                Paramecia (weird reality powers)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Zoan" />
+                Zoan (animal / hybrid)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Mythical Zoan" />
+                Mythical Zoan (mythic beast / deity)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Gravity" />
+                Gravity (attraction, repulsion, crushing)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Ope Ope" />
+                Ope Ope (surgical space, ROOMs)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Soul" />
+                Soul (Big Mom style, soul fragments, homies)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Hormone" />
+                Hormone (Ivankov style body manipulation)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Ice" />
+                Ice / Frost
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Explosion" />
+                Explosion / Combustion
+              </label>
+            </div>
+            <label>
+              Extra Fruit Notes
+              <textarea
+                id="fruit-notes"
+                rows="2"
+                placeholder="Specific combos or references: Kaido’s fruit + hormone powers + ice, etc."
+              ></textarea>
+            </label>
+          </div>
+
+          <!-- Style Modifiers / Visuals -->
+          <div class="card">
+            <h2>C. Style & Visuals</h2>
+            <div class="checkbox-grid">
+              <label>
+                <input type="checkbox" name="styleMods" value="Explosive" />
+                Explosive (impact, detonations, shockwaves)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Precision" />
+                Precision (sniper-like, surgical, controlled)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Sustained" />
+                Sustained (channels, auras, zones)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Morphing" />
+                Morphing (weapon forms, creature forms, shifting)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Overcharge" />
+                Overcharge (self-damage, push limits, high risk)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Cinematic" />
+                Cinematic (slow-mo moments, hero shots, anime cuts)
+              </label>
+            </div>
+            <label>
+              Visual / Style Notes
+              <textarea
+                id="style-notes"
+                rows="2"
+                placeholder="e.g. red lightning, crackling gravity rings, soul-flame petals, etc."
+              ></textarea>
+            </label>
+          </div>
+
+          <!-- Output Preferences -->
+          <div class="card">
+            <h2>D. Output Preferences</h2>
+            <div class="field-grid">
+              <label>
+                # of abilities
+                <input id="num-abilities" type="number" min="1" max="6" value="3" />
+              </label>
+              <label>
+                Formatting style
+                <select id="format-style">
+                  <option value="markdown">Markdown (### Ability Name)</option>
+                  <option value="plain">Plain text</option>
+                  <option value="bullets">Bulleted list under each ability</option>
+                </select>
+              </label>
+            </div>
+            <label>
+              Mechanics style
+              <select id="mechanics-detail">
+                <option value="simple">
+                  Simple DnD-style (range, save, damage type, brief effect)
+                </option>
+                <option value="detailed">
+                  More detailed (action type, scaling hints, conditions)
+                </option>
+              </select>
+            </label>
+            <label class="checkbox-inline">
+              <input type="checkbox" id="tone-epic" checked />
+              Make the tone epic and anime-cinematic, but keep mechanics concise and usable at
+              the table.
+            </label>
+            <label>
+              Extra Output Notes
+              <textarea
+                id="output-notes"
+                rows="2"
+                placeholder="e.g. one defensive, one offensive, one support; avoid super complex resource tracking."
+              ></textarea>
+            </label>
+          </div>
+        </section>
+
+        <!-- RIGHT: Prompt + Output -->
+        <section class="panel panel-output">
+          <div class="card">
+            <h2>Prompt Preview (auto-built)</h2>
+            <p class="hint">
+              This is exactly what gets sent to ChatGPT. You can copy it if you want to reuse or
+              tweak manually.
+            </p>
+            <textarea id="prompt-preview" readonly rows="14"></textarea>
+          </div>
+
+          <div class="card">
+            <div class="actions">
+              <button id="generate-btn">Generate Abilities</button>
+              <span id="status-text"></span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Generated Abilities</h2>
+            <div id="results" class="results-box">
+              <p class="hint">
+                Your custom devil-fruit abilities will appear here with: name, cinematic description,
+                and simple DnD mechanics.
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="app-footer">
+        <small>
+          All on one page. Built for quick use at the table: check boxes, add flavor, press
+          Generate.
+        </small>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
