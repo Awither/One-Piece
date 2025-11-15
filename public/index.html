@@ -92,9 +92,13 @@
             </label>
           </div>
 
-          <!-- Devil Fruit Traits -->
+          <!-- Devil Fruit Types (box B, cleaned) -->
           <div class="card">
-            <h2>B. Devil Fruit Traits</h2>
+            <h2>B. Devil Fruit Types</h2>
+            <p class="hint">
+              Select the <strong>categories</strong> of devil fruits involved in this combo (not specific
+              powers).
+            </p>
             <div class="checkbox-grid">
               <label>
                 <input type="checkbox" name="fruitTraits" value="Logia" />
@@ -102,39 +106,35 @@
               </label>
               <label>
                 <input type="checkbox" name="fruitTraits" value="Paramecia" />
-                Paramecia (weird reality powers)
+                Paramecia (reality-warping, objects, special rules)
               </label>
               <label>
                 <input type="checkbox" name="fruitTraits" value="Zoan" />
-                Zoan (animal / hybrid)
+                Zoan (animal / hybrid transformation)
               </label>
               <label>
                 <input type="checkbox" name="fruitTraits" value="Mythical Zoan" />
                 Mythical Zoan (mythic beast / deity)
               </label>
               <label>
-                <input type="checkbox" name="fruitTraits" value="Gravity" />
-                Gravity (attraction, repulsion, crushing)
+                <input type="checkbox" name="fruitTraits" value="Ancient Zoan" />
+                Ancient Zoan (prehistoric creatures)
               </label>
               <label>
-                <input type="checkbox" name="fruitTraits" value="Ope Ope" />
-                Ope Ope (surgical space, ROOMs)
+                <input type="checkbox" name="fruitTraits" value="Special" />
+                Special / Unique (weird, hard-to-classify fruits)
               </label>
               <label>
-                <input type="checkbox" name="fruitTraits" value="Soul" />
-                Soul (Big Mom style, soul fragments, homies)
+                <input type="checkbox" name="fruitTraits" value="Artificial" />
+                Artificial / SMILE-style
               </label>
               <label>
-                <input type="checkbox" name="fruitTraits" value="Hormone" />
-                Hormone (Ivankov style body manipulation)
+                <input type="checkbox" name="fruitTraits" value="Awakened" />
+                Awakened fruit (environmental & body changes)
               </label>
               <label>
-                <input type="checkbox" name="fruitTraits" value="Ice" />
-                Ice / Frost
-              </label>
-              <label>
-                <input type="checkbox" name="fruitTraits" value="Explosion" />
-                Explosion / Combustion
+                <input type="checkbox" name="fruitTraits" value="Hybrid Combo" />
+                Hybrid multi-fruit synergy (multiple powers combined)
               </label>
             </div>
             <label>
@@ -142,51 +142,71 @@
               <textarea
                 id="fruit-notes"
                 rows="2"
-                placeholder="Specific combos or references: Kaido’s fruit + hormone powers + ice, etc."
+                placeholder="Specific fruits or combos, e.g. Kaido’s dragon + hormone-style body control + ice-themed flavor."
               ></textarea>
             </label>
           </div>
 
-          <!-- Style Modifiers / Visuals -->
+          <!-- Outcome / Shape (Box C reworked) -->
           <div class="card">
-            <h2>C. Style & Visuals</h2>
+            <h2>C. Desired Outcome / Ability Shape</h2>
+            <p class="hint">
+              What do you want the combo to <strong>actually do</strong> in the scene? Pick a few, then use the
+              notes box to specify an exact outcome.
+            </p>
             <div class="checkbox-grid">
               <label>
-                <input type="checkbox" name="styleMods" value="Explosive" />
-                Explosive (impact, detonations, shockwaves)
+                <input type="checkbox" name="styleMods" value="Barrier" />
+                Barrier / Shield (block or reduce damage)
               </label>
               <label>
-                <input type="checkbox" name="styleMods" value="Precision" />
-                Precision (sniper-like, surgical, controlled)
+                <input type="checkbox" name="styleMods" value="Restrain" />
+                Restrain / Bind (immobilize, grapple, root, imprison)
               </label>
               <label>
-                <input type="checkbox" name="styleMods" value="Sustained" />
-                Sustained (channels, auras, zones)
+                <input type="checkbox" name="styleMods" value="Zone" />
+                Area Denial / Zone (hazardous terrain, control area)
               </label>
               <label>
                 <input type="checkbox" name="styleMods" value="Morphing" />
-                Morphing (weapon forms, creature forms, shifting)
+                Morphing / Weapon Form (change shape, weaponization)
               </label>
               <label>
                 <input type="checkbox" name="styleMods" value="Overcharge" />
-                Overcharge (self-damage, push limits, high risk)
+                Overcharge / Self-Buff (power spike at a cost)
               </label>
               <label>
-                <input type="checkbox" name="styleMods" value="Cinematic" />
-                Cinematic (slow-mo moments, hero shots, anime cuts)
+                <input type="checkbox" name="styleMods" value="Mobility" />
+                Mobility / Gap Closer / Escape
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Debuff" />
+                Debuff / Weakening (reduce stats, impose conditions)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Explosion" />
+                Explosion / Burst (big AoE damage)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Battlefield Control" />
+                Battlefield Control (push/pull, reposition, knockback)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Signature Finisher" />
+                Signature Finisher (big named move, ultimate)
               </label>
             </div>
             <label>
-              Visual / Style Notes
+              Outcome / Effect Notes
               <textarea
                 id="style-notes"
                 rows="2"
-                placeholder="e.g. red lightning, crackling gravity rings, soul-flame petals, etc."
+                placeholder="Describe the exact outcome you want: e.g. 'A red-lightning dome that blocks Kaido’s blast and then explodes outward.'"
               ></textarea>
             </label>
           </div>
 
-          <!-- Output Preferences -->
+          <!-- Output Preferences (Box D improved) -->
           <div class="card">
             <h2>D. Output Preferences</h2>
             <div class="field-grid">
@@ -195,36 +215,41 @@
                 <input id="num-abilities" type="number" min="1" max="6" value="3" />
               </label>
               <label>
-                Formatting style
+                Output style
                 <select id="format-style">
-                  <option value="markdown">Markdown (### Ability Name)</option>
-                  <option value="plain">Plain text</option>
-                  <option value="bullets">Bulleted list under each ability</option>
+                  <option value="stat-block">
+                    DnD-style stat block / spell card (compact but structured)
+                  </option>
+                  <option value="minimal">
+                    Very minimal quick reference (shorter text, to the point)
+                  </option>
+                  <option value="cinematic">
+                    Longer, more descriptive & cinematic (extra flavor)
+                  </option>
                 </select>
               </label>
             </div>
             <label>
-              Mechanics style
+              Mechanics detail level
               <select id="mechanics-detail">
                 <option value="simple">
-                  Simple DnD-style (range, save, damage type, brief effect)
+                  Simple: action type, range, save, damage, and 1–2 core effects
                 </option>
                 <option value="detailed">
-                  More detailed (action type, scaling hints, conditions)
+                  Detailed: include conditions, scaling notes, and special rules
                 </option>
               </select>
             </label>
             <label class="checkbox-inline">
               <input type="checkbox" id="tone-epic" checked />
-              Make the tone epic and anime-cinematic, but keep mechanics concise and usable at
-              the table.
+              Make the tone epic and anime-cinematic, but keep mechanics usable at the table.
             </label>
             <label>
               Extra Output Notes
               <textarea
                 id="output-notes"
                 rows="2"
-                placeholder="e.g. one defensive, one offensive, one support; avoid super complex resource tracking."
+                placeholder="e.g. one defensive, one offensive, one support; avoid super complex tracking; limit to 5–7 lines per ability."
               ></textarea>
             </label>
           </div>
@@ -252,8 +277,8 @@
             <h2>Generated Abilities</h2>
             <div id="results" class="results-box">
               <p class="hint">
-                Your custom devil-fruit abilities will appear here with: name, cinematic description,
-                and simple DnD mechanics.
+                Each generated ability will show up in its own card with: name, description, and key
+                mechanics (range, DC, damage, effect).
               </p>
             </div>
           </div>
