@@ -1,11 +1,13 @@
 // api/generate.js
 const OpenAI = require("openai");
 
+// Create client using the secret from Vercel
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
 module.exports = async (req, res) => {
+  // Only allow POST
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
     return;
@@ -19,6 +21,7 @@ module.exports = async (req, res) => {
       return;
     }
 
+    // Call OpenAI
     const response = await client.responses.create({
       model: "gpt-5.1",
       input: [
@@ -35,6 +38,7 @@ module.exports = async (req, res) => {
       ]
     });
 
+    // Try to pull text out of the response safely
     let text = "";
 
     if (response.output_text) {
@@ -54,9 +58,14 @@ module.exports = async (req, res) => {
 
     res.status(200).json({ result: text });
   } catch (err) {
+    // Log full error server-side
     console.error("Error calling OpenAI:", err);
+
+    // Send back the actual message so the browser can show it
     res.status(500).json({
-      error: "Failed to generate abilities. Check server logs and your API key."
+      error:
+        "OPENAI_ERROR: " +
+        (err && err.message ? err.message : "Unknown server error")
     });
   }
 };
