@@ -257,6 +257,24 @@
                 </option>
               </select>
             </label>
+
+            <!-- Preferred DC -->
+            <label>
+              Preferred DC (optional)
+              <input
+                id="preferred-dc"
+                type="text"
+                placeholder="e.g. 15 or 8 + proficiency + CHA"
+              />
+            </label>
+
+            <!-- Power level -->
+            <label class="power-level-label">
+              Power Level (1–10)
+              <input id="power-level" type="range" min="1" max="10" value="6" />
+              <span id="power-level-display" class="power-level-display">6 – High</span>
+            </label>
+
             <label class="checkbox-inline">
               <input type="checkbox" id="tone-epic" checked />
               Make the tone epic and anime-cinematic, but keep mechanics usable at the table.
