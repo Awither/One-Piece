@@ -147,8 +147,7 @@ input[type="checkbox"] {
   accent-color: var(--accent);
 }
 
-#prompt-preview,
-.results-box {
+#prompt-preview {
   width: 100%;
   border-radius: var(--radius-md);
   border: 1px solid #1f2937;
@@ -158,17 +157,78 @@ input[type="checkbox"] {
     "Liberation Mono", "Courier New", monospace;
   font-size: 0.8rem;
   padding: 8px 10px;
-}
-
-#prompt-preview {
   resize: vertical;
 }
 
+/* Results container – now just a wrapper */
 .results-box {
-  min-height: 120px;
-  white-space: pre-wrap;
+  padding: 0;
+  border: none;
+  background: transparent;
+  min-height: 0;
+  white-space: normal;
 }
 
+/* Grid of ability cards */
+.ability-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px;
+}
+
+/* Individual ability card */
+.ability-card {
+  border-radius: var(--radius-md);
+  border: 1px solid #1f2937;
+  background: #020617;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 140px;
+}
+
+.ability-card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.ability-card-summary {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.ability-card-description {
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+.ability-card-mech {
+  margin-top: 6px;
+  font-size: 0.78rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 4px 12px;
+}
+
+.ability-card-mech-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ability-card-mech-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.ability-card-mech-value {
+  font-size: 0.8rem;
+}
+
+/* Generate button + status */
 .actions {
   display: flex;
   align-items: center;
@@ -232,6 +292,10 @@ input[type="checkbox"] {
 
   .field-grid,
   .checkbox-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ability-card-mech {
     grid-template-columns: minmax(0, 1fr);
   }
 }
