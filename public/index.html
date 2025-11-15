@@ -97,7 +97,7 @@
             <h2>B. Devil Fruit Types</h2>
             <p class="hint">
               Select the <strong>categories</strong> of devil fruits involved in this combo (not specific
-              powers).
+              powers like gravity or ice).
             </p>
             <div class="checkbox-grid">
               <label>
@@ -126,11 +126,11 @@
               </label>
               <label>
                 <input type="checkbox" name="fruitTraits" value="Artificial" />
-                Artificial / SMILE-style
+                Artificial / SMILE-style fruits
               </label>
               <label>
                 <input type="checkbox" name="fruitTraits" value="Awakened" />
-                Awakened fruit (environmental & body changes)
+                Awakened fruit (environment + body changes)
               </label>
               <label>
                 <input type="checkbox" name="fruitTraits" value="Hybrid Combo" />
@@ -201,7 +201,7 @@
               <textarea
                 id="style-notes"
                 rows="2"
-                placeholder="Describe the exact outcome you want: e.g. 'A red-lightning dome that blocks Kaido’s blast and then explodes outward.'"
+                placeholder="Describe the exact outcome you want: e.g. 'A red-lightning dome that blocks a blast and then explodes outward.'"
               ></textarea>
             </label>
           </div>
@@ -229,6 +229,23 @@
                 </select>
               </label>
             </div>
+
+            <!-- Model choice -->
+            <label>
+              Model / AI power level
+              <select id="model-choice">
+                <option value="gpt-4.1-mini">
+                  Fast & cheap (gpt-4.1-mini) – recommended for most use
+                </option>
+                <option value="gpt-4.1">
+                  Stronger (gpt-4.1) – better quality, higher cost
+                </option>
+                <option value="gpt-5.1">
+                  Max power (gpt-5.1) – requires verified org; may error if not allowed
+                </option>
+              </select>
+            </label>
+
             <label>
               Mechanics detail level
               <select id="mechanics-detail">
@@ -277,8 +294,8 @@
             <h2>Generated Abilities</h2>
             <div id="results" class="results-box">
               <p class="hint">
-                Each generated ability will show up in its own card with: name, description, and key
-                mechanics (range, DC, damage, effect).
+                Each generated ability will show up in its own card with: name, summary, cinematic
+                description, and key mechanics (range, DC, damage, effect).
               </p>
             </div>
           </div>
