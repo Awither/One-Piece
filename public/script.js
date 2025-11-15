@@ -158,10 +158,12 @@ document.addEventListener("DOMContentLoaded", () => {
       resultsBox.textContent = data.result || "(No text returned from API.)";
       statusText.textContent = "Done.";
     } catch (err) {
-      console.error(err);
-      statusText.textContent = "Error.";
-      resultsBox.textContent =
-        "Failed to generate abilities. Check your internet connection and that your API key is set correctly on the server.";
+  console.error(err);
+  statusText.textContent = "Error.";
+  resultsBox.textContent =
+    "Error from API: " + (err && err.message ? err.message : "Unknown error");
+}
+
     }
   });
 });
