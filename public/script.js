@@ -28,6 +28,9 @@ function buildPrompt() {
   const toneEpic = document.getElementById("tone-epic").checked;
   const outputNotes = document.getElementById("output-notes").value.trim();
   const modelChoice = document.getElementById("model-choice").value;
+  const preferredDc = document.getElementById("preferred-dc").value.trim();
+  const powerLevel =
+    parseInt(document.getElementById("power-level").value, 10) || 6;
 
   const lines = [];
 
@@ -103,6 +106,21 @@ function buildPrompt() {
 
   lines.push("Preferred model: " + modelChoice + " (used by the backend, if available).");
 
+  lines.push(
+    "Preferred DC: " +
+      (preferredDc
+        ? preferredDc +
+          " (use this DC or base your DC choices around this difficulty level)."
+        : "No fixed DC specified; choose DCs appropriate for the level and power rating.")
+  );
+
+  lines.push(
+    "Desired power level (1–10): " +
+      powerLevel +
+      " where 1 = weak / low impact and 10 = godlike, unbelievably powerful. " +
+      "Damage, DCs, and narrative stakes should roughly match this rating."
+  );
+
   if (outputNotes) {
     lines.push(`Additional output constraints: ${outputNotes}`);
   }
@@ -155,6 +173,16 @@ function updatePromptPreview() {
   if (preview) {
     preview.value = prompt;
   }
+}
+
+// Map power level number to a quick label
+function describePowerLevel(n) {
+  const v = Number(n);
+  if (v <= 2) return `${v} – Very low`;
+  if (v <= 4) return `${v} – Low / moderate`;
+  if (v <= 6) return `${v} – High`;
+  if (v <= 8) return `${v} – Very high`;
+  return `${v} – Godlike`;
 }
 
 // Render abilities as separate cards
@@ -227,9 +255,21 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initial fill
   updatePromptPreview();
 
+  // Power level display init
+  const powerInput = document.getElementById("power-level");
+  const powerDisplay = document.getElementById("power-level-display");
+  if (powerInput && powerDisplay) {
+    powerDisplay.textContent = describePowerLevel(powerInput.value);
+    powerInput.addEventListener("input", () => {
+      powerDisplay.textContent = describePowerLevel(powerInput.value);
+      updatePromptPreview();
+    });
+  }
+
   // Rebuild the prompt anytime an input changes
   const inputs = document.querySelectorAll("input, textarea, select");
   inputs.forEach((el) => {
+    // power-level already has its own input handler above but also fine here
     el.addEventListener("input", updatePromptPreview);
     el.addEventListener("change", updatePromptPreview);
   });
