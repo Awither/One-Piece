@@ -51,20 +51,20 @@ function buildPrompt() {
   if (effectNotes) lines.push(`Extra effect guidance: ${effectNotes}`);
   lines.push("");
 
-  lines.push("=== Devil Fruit Traits & Inspirations ===");
+  lines.push("=== Devil Fruit Types ===");
   lines.push(
-    "Desired fruit traits / inspirations: " +
-      (fruitTraits.length ? fruitTraits.join(", ") : "Any type that fits the concept.")
+    "Fruit type categories involved: " +
+      (fruitTraits.length ? fruitTraits.join(", ") : "Any fruit types that fit the concept.")
   );
   if (fruitNotes) lines.push(`Extra fruit combo notes: ${fruitNotes}`);
   lines.push("");
 
-  lines.push("=== Style, Visuals & Tone ===");
+  lines.push("=== Desired Outcome / Ability Shape ===");
   lines.push(
-    "Style / visual modifiers: " +
-      (styleMods.length ? styleMods.join(", ") : "Any style that feels cinematic.")
+    "High-level outcomes / shapes desired: " +
+      (styleMods.length ? styleMods.join(", ") : "Any shape that feels cool and thematic.")
   );
-  if (styleNotes) lines.push(`Visual flavor notes: ${styleNotes}`);
+  if (styleNotes) lines.push(`Outcome / effect notes: ${styleNotes}`);
   if (toneEpic) {
     lines.push(
       "Tone: Epic, anime-style, cinematic, but still readable at the table in a few seconds."
@@ -72,19 +72,34 @@ function buildPrompt() {
   }
   lines.push("");
 
-  lines.push("=== Output Format ===");
+  lines.push("=== Output Style Preferences ===");
   lines.push(
     "Number of abilities: " +
       numAbilities +
       ". Each ability MUST include: (1) Ability Name, (2) Cinematic Description, (3) Simple DnD mechanics."
   );
-  lines.push("Formatting style preference: " + formatStyle);
+
+  if (formatStyle === "stat-block") {
+    lines.push(
+      "Presentation preference: mechanics should read like a clear DnD 5e spell or feature — compact but structured and easy to scan."
+    );
+  } else if (formatStyle === "minimal") {
+    lines.push(
+      "Presentation preference: very minimal quick reference. Keep descriptions tight and avoid long paragraphs."
+    );
+  } else if (formatStyle === "cinematic") {
+    lines.push(
+      "Presentation preference: a bit more descriptive and cinematic, but still with clearly separated mechanics."
+    );
+  }
+
   lines.push(
-    "Mechanics style preference: " +
+    "Mechanics detail preference: " +
       (mechanicsDetail === "simple"
         ? "Simple: include action type, range, saving throw (if any), basic damage, and 1–2 core effects."
         : "Detailed: include action type, range, save, damage/scaling ideas, and any conditions or special rules.")
   );
+
   if (outputNotes) {
     lines.push(`Additional output constraints: ${outputNotes}`);
   }
@@ -99,20 +114,33 @@ function buildPrompt() {
   );
   lines.push("- Keep everything balanced at roughly level 10–15 unless the context suggests otherwise.");
   lines.push("");
-  lines.push("=== Presentation ===");
-  if (formatStyle === "markdown") {
-    lines.push(
-      "Use Markdown. For each ability, start with a heading like `### Ability Name` followed by description and mechanics."
-    );
-  } else if (formatStyle === "bullets") {
-    lines.push(
-      "Present each ability with the name, then a short paragraph of description, then bullet points for mechanics."
-    );
-  } else {
-    lines.push(
-      "Plain text is fine but clearly separate each ability with a blank line and a clear name."
-    );
-  }
+
+  lines.push("=== Output JSON Format (VERY IMPORTANT) ===");
+  lines.push(
+    "Respond ONLY with valid JSON in this exact structure, with no extra text before or after:"
+  );
+  lines.push(`
+{
+  "abilities": [
+    {
+      "name": "Ability Name",
+      "summary": "One-line summary of what the ability does.",
+      "description": "Cinematic but concise description of how it looks and feels.",
+      "mechanics": {
+        "action_type": "Action, Bonus Action, Reaction, etc.",
+        "range": "Range and area of effect.",
+        "target": "Who or what is affected.",
+        "save": "Saving throw type, if any (e.g. Dex save).",
+        "dc": "Typical DC or formula (e.g. 16 or 8 + proficiency + ability modifier).",
+        "damage": "Damage dice and type, if any.",
+        "effect": "Main mechanical effect(s) in 1–2 sentences."
+      }
+    }
+  ]
+}`);
+  lines.push(
+    "Make sure it is valid JSON. Do NOT include any commentary or Markdown, only the JSON object."
+  );
 
   return lines.join("\n");
 }
@@ -124,6 +152,71 @@ function updatePromptPreview() {
   if (preview) {
     preview.value = prompt;
   }
+}
+
+// Render abilities as separate cards
+function renderAbilities(abilities) {
+  const resultsBox = document.getElementById("results");
+  if (!resultsBox) return;
+
+  resultsBox.innerHTML = "";
+  resultsBox.classList.add("ability-grid");
+
+  abilities.forEach((ability, index) => {
+    const card = document.createElement("div");
+    card.className = "ability-card";
+
+    const title = document.createElement("div");
+    title.className = "ability-card-title";
+    title.textContent = ability.name || `Ability ${index + 1}`;
+
+    const summary = document.createElement("div");
+    summary.className = "ability-card-summary";
+    summary.textContent =
+      ability.summary ||
+      "No summary provided — consider adding a brief one-line explanation.";
+
+    const description = document.createElement("div");
+    description.className = "ability-card-description";
+    description.textContent =
+      ability.description || "No description provided.";
+
+    const mech = ability.mechanics || {};
+    const mechContainer = document.createElement("div");
+    mechContainer.className = "ability-card-mech";
+
+    function addMechItem(label, value) {
+      const item = document.createElement("div");
+      item.className = "ability-card-mech-item";
+
+      const lbl = document.createElement("div");
+      lbl.className = "ability-card-mech-label";
+      lbl.textContent = label;
+
+      const val = document.createElement("div");
+      val.className = "ability-card-mech-value";
+      val.textContent = value || "-";
+
+      item.appendChild(lbl);
+      item.appendChild(val);
+      mechContainer.appendChild(item);
+    }
+
+    addMechItem("Action", mech.action_type);
+    addMechItem("Range", mech.range);
+    addMechItem("Target", mech.target);
+    addMechItem("Save", mech.save);
+    addMechItem("DC", mech.dc);
+    addMechItem("Damage", mech.damage);
+    addMechItem("Effect", mech.effect);
+
+    card.appendChild(title);
+    card.appendChild(summary);
+    card.appendChild(description);
+    card.appendChild(mechContainer);
+
+    resultsBox.appendChild(card);
+  });
 }
 
 // Attach listeners once the DOM is ready
@@ -166,11 +259,29 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const data = await res.json();
-      resultsBox.textContent = data.result || "(No text returned from API.)";
+      const raw = data.result || "";
+
+      let parsed;
+      try {
+        parsed = JSON.parse(raw);
+      } catch (e) {
+        console.warn("Failed to parse JSON abilities, falling back to raw text.", e);
+      }
+
+      if (parsed && Array.isArray(parsed.abilities)) {
+        renderAbilities(parsed.abilities);
+      } else {
+        // Fallback: just show raw text
+        resultsBox.classList.remove("ability-grid");
+        resultsBox.textContent =
+          raw || "(No text returned from API, and no abilities parsed.)";
+      }
+
       statusText.textContent = "Done.";
     } catch (err) {
       console.error(err);
       statusText.textContent = "Error.";
+      resultsBox.classList.remove("ability-grid");
       resultsBox.textContent =
         "Error from API: " + (err && err.message ? err.message : "Unknown error");
     }
