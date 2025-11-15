@@ -27,6 +27,7 @@ function buildPrompt() {
   const mechanicsDetail = document.getElementById("mechanics-detail").value;
   const toneEpic = document.getElementById("tone-epic").checked;
   const outputNotes = document.getElementById("output-notes").value.trim();
+  const modelChoice = document.getElementById("model-choice").value;
 
   const lines = [];
 
@@ -76,7 +77,7 @@ function buildPrompt() {
   lines.push(
     "Number of abilities: " +
       numAbilities +
-      ". Each ability MUST include: (1) Ability Name, (2) Cinematic Description, (3) Simple DnD mechanics."
+      ". Each ability MUST include: (1) Ability Name, (2) Summary, (3) Cinematic Description, (4) Simple DnD mechanics."
   );
 
   if (formatStyle === "stat-block") {
@@ -99,6 +100,8 @@ function buildPrompt() {
         ? "Simple: include action type, range, saving throw (if any), basic damage, and 1–2 core effects."
         : "Detailed: include action type, range, save, damage/scaling ideas, and any conditions or special rules.")
   );
+
+  lines.push("Preferred model: " + modelChoice + " (used by the backend, if available).");
 
   if (outputNotes) {
     lines.push(`Additional output constraints: ${outputNotes}`);
@@ -241,6 +244,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const prompt = buildPrompt();
     document.getElementById("prompt-preview").value = prompt;
 
+    const modelChoice = document.getElementById("model-choice").value || "gpt-4.1-mini";
+
     statusText.textContent = "Generating abilities...";
     resultsBox.textContent = "";
 
@@ -250,7 +255,7 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ prompt })
+        body: JSON.stringify({ prompt, model: modelChoice })
       });
 
       if (!res.ok) {
