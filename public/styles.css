@@ -26,7 +26,7 @@ body {
 }
 
 .app-root {
-  max-width: 1400px; /* wider so 3 cards fit nicely */
+  max-width: 1400px;
   margin: 0 auto;
   padding: 12px 16px 32px;
   display: flex;
@@ -144,8 +144,10 @@ label textarea:focus {
 }
 
 /* Power level display */
-.power-level-label {
-  gap: 4px;
+.power-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .power-level-display {
@@ -170,6 +172,22 @@ input[type="checkbox"] {
   resize: vertical;
 }
 
+/* Power reference */
+.power-ref summary {
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.power-ref-body {
+  margin-top: 8px;
+}
+
+.power-ref-list {
+  padding-left: 18px;
+  margin: 4px 0;
+  font-size: 0.78rem;
+}
+
 /* Results container – now just a wrapper */
 .results-box {
   padding: 0;
@@ -182,7 +200,7 @@ input[type="checkbox"] {
 /* Grid of ability cards */
 .ability-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* wider min cards */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 12px;
 }
 
@@ -198,9 +216,25 @@ input[type="checkbox"] {
   min-height: 150px;
 }
 
+.ability-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
 .ability-card-title {
   font-size: 0.98rem;
   font-weight: 600;
+}
+
+.ability-card-tag {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid #1f2937;
+  background: rgba(249, 115, 22, 0.06);
+  color: var(--text-muted);
 }
 
 .ability-card-summary {
@@ -236,6 +270,99 @@ input[type="checkbox"] {
 
 .ability-card-mech-value {
   font-size: 0.8rem;
+}
+
+/* Small inline actions inside card */
+.ability-card-actions {
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Toolbar for view + exports */
+.results-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 6px;
+}
+
+.results-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Saved sets bar */
+.saved-toolbar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.saved-toolbar select {
+  min-width: 160px;
+}
+
+/* Reusable chip-style buttons */
+.chip {
+  border-radius: 999px;
+  border: 1px solid #374151;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  background: #020617;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chip.small {
+  padding: 3px 8px;
+  font-size: 0.76rem;
+}
+
+.chip.subtle {
+  opacity: 0.8;
+}
+
+.chip.active {
+  border-color: var(--accent);
+  background: rgba(249, 115, 22, 0.1);
+}
+
+.chip:hover {
+  border-color: var(--accent);
+}
+
+/* Table view */
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.results-table th,
+.results-table td {
+  border: 1px solid #1f2937;
+  padding: 4px 6px;
+}
+
+.results-table th {
+  text-align: left;
+  background: #020617;
+  color: var(--text-muted);
 }
 
 /* Generate button + status */
@@ -309,3 +436,41 @@ input[type="checkbox"] {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Print styles for PDF */
+@media print {
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+
+  .app-root {
+    max-width: none;
+    padding: 0;
+  }
+
+  .app-header,
+  .panel-inputs,
+  .card:nth-of-type(1),
+  .card:nth-of-type(2),
+  .results-toolbar,
+  .saved-toolbar,
+  #status-text {
+    display: none !important;
+  }
+
+  .panel-output {
+    grid-column: 1 / -1;
+  }
+
+  .card {
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .ability-card,
+  .results-table {
+    page-break-inside: avoid;
+  }
+}
+
