@@ -24,7 +24,7 @@
               Character Context
               <span
                 class="help-icon"
-                title="Basic info so the abilities feel tailored to this character’s theme and role."
+                title="Basic info so the abilities feel tailored to this character’s theme, devil fruit, and role."
                 >?</span
               >
             </h2>
@@ -43,11 +43,11 @@
               </label>
             </div>
             <label>
-              Theme / Vibe
+              Theme / Vibe / Devil Fruit
               <input
                 id="char-theme"
                 type="text"
-                placeholder="Red lightning, gravity-bending, soul flames, etc."
+                placeholder="Devil fruit + vibe: sand logia, dragon zoan, red lightning, gravity-bending, etc."
               />
             </label>
             <label>
@@ -121,7 +121,7 @@
                 Reality-Bending (space, time, gravity, souls)
               </label>
             </div>
-            <label data-ui-min="2">
+            <label data-ui-min="0">
               Extra Effect Notes
               <textarea
                 id="effect-notes"
@@ -183,7 +183,7 @@
                 Hybrid multi-fruit synergy (multiple powers combined)
               </label>
             </div>
-            <label data-ui-min="2">
+            <label data-ui-min="0">
               Extra Fruit Notes
               <textarea
                 id="fruit-notes"
@@ -194,7 +194,7 @@
           </div>
 
           <!-- Outcome / Shape (Box C) -->
-          <div class="card" data-ui-min="1">
+          <div class="card" data-ui-min="0">
             <h2>
               C. Desired Outcome / Ability Shape
               <span
@@ -241,6 +241,10 @@
                 Explosion / Burst (big AoE damage)
               </label>
               <label>
+                <input type="checkbox" name="styleMods" value="High Damage" />
+                High Damage (single-target or small-area nukes)
+              </label>
+              <label>
                 <input type="checkbox" name="styleMods" value="Battlefield Control" />
                 Battlefield Control (push/pull, reposition, knockback)
               </label>
@@ -265,30 +269,31 @@
               Combo Focus
               <span
                 class="help-icon"
-                title="What kind of devil fruit combo style these abilities should lean into."
+                title="What kind of devil fruit combo style these abilities should lean into. You can pick multiple."
                 >?</span
               >
             </h2>
-            <label>
-              Style of combo
-              <select id="combo-focus">
-                <option value="any">
-                  Any style that fits (single fruit or combos)
-                </option>
-                <option value="single">
-                  Single-fruit style techniques
-                </option>
-                <option value="combo">
-                  Multi-fruit combo techniques
-                </option>
-                <option value="transformation">
-                  Transformation mode (Zoan / hybrid focus)
-                </option>
-                <option value="awakening">
-                  Environmental awakening / terrain takeover
-                </option>
-              </select>
-            </label>
+            <p class="hint">
+              Pick one or more combo styles to emphasize. Leave everything unchecked to let the AI decide freely.
+            </p>
+            <div class="checkbox-grid">
+              <label>
+                <input type="checkbox" name="comboFocus" value="single" />
+                Single-fruit style techniques
+              </label>
+              <label>
+                <input type="checkbox" name="comboFocus" value="combo" />
+                Multi-fruit combo techniques
+              </label>
+              <label>
+                <input type="checkbox" name="comboFocus" value="transformation" />
+                Transformation mode (Zoan / hybrid focus)
+              </label>
+              <label>
+                <input type="checkbox" name="comboFocus" value="awakening" />
+                Environmental awakening / terrain takeover
+              </label>
+            </div>
             <label class="checkbox-inline" data-ui-min="2">
               <input type="checkbox" id="include-combo-explanation" />
               Include a short <strong>combo logic</strong> note in the output (how the fruits interact).
@@ -475,7 +480,7 @@
               <input type="checkbox" id="tone-epic" checked />
               Make the tone epic and anime-cinematic, but keep mechanics usable at the table.
             </label>
-            <label data-ui-min="2">
+            <label data-ui-min="0">
               Extra Output Notes
               <textarea
                 id="output-notes"
