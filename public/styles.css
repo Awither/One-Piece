@@ -474,7 +474,6 @@ input[type="checkbox"] {
 @media print {
   body {
     background: #ffffff;
-    color: #000000;
   }
 
   .app-root {
