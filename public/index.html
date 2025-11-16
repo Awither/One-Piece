@@ -1,263 +1,551 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Devil Fruit Generator</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-<div class="app-container">
-  <h1>Devil Fruit Generator</h1>
-  <p style="font-size:0.9rem;color:#e5e7eb;margin-bottom:14px;">
-    Configure your <strong>Devil Fruit</strong> concepts and generator settings. Choose a complexity level,
-    fill in the boxes, or hit <strong>Random</strong> to auto-fill many fields (including over 100 Theme/Vibe/Devil Fruit options).
-  </p>
+  <head>
+    <meta charset="utf-8" />
+    <title>Devil Fruit Ability Builder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-root">
+      <header class="app-header">
+        <h1>Devil Fruit Ability Builder</h1>
+        <p>
+          Build custom, cinematic devil-fruit abilities on the fly for your One Piece–style DnD game.
+        </p>
+      </header>
 
-  <!-- Global Controls -->
-  <div class="control-row">
-    <div>
-      <label for="complexity">Complexity Level</label>
-      <select id="complexity">
-        <option value="basic">Basic – Fast setup</option>
-        <option value="moderate">Moderate – More control</option>
-        <option value="complex">Complex – Full control</option>
-      </select>
-      <div class="small-note" id="complexity-description">
-        Basic: Pick effect type, Devil Fruit type, number of abilities, and power level.
-      </div>
-    </div>
-
-    <div>
-      <label for="mechanicsDetail">Mechanics Detail Level</label>
-      <select id="mechanicsDetail">
-        <option value="simple">Simple</option>
-        <option value="moderate" selected>Moderate</option>
-        <option value="complex">Deep / Crunchy</option>
-      </select>
-    </div>
-
-    <div>
-      <label for="outputStyle">Output Style</label>
-      <select id="outputStyle">
-        <option value="cinematic" selected>Cinematic description</option>
-        <option value="bullets">Bullet list (GM notes)</option>
-        <option value="statblock">Stat-block style</option>
-      </select>
-    </div>
-
-    <div style="flex:0 0 auto;display:flex;gap:8px;">
-      <button class="btn-secondary" id="randomBtn">Randomize</button>
-      <button class="btn-primary" id="clearBtn">Clear</button>
-    </div>
-  </div>
-
-  <hr>
-
-  <!-- Character Context -->
-  <h2>Character Context</h2>
-  <div class="row">
-    <div class="col">
-      <div class="section-card">
-        <div class="section-title">Quick Context</div>
-        <label for="characterRole">Who is this character?</label>
-        <input id="characterRole" type="text" placeholder="Example: Elren, cyborg Firbolg artificer leading Wano's revolt">
-        <label for="characterGoal" style="margin-top:6px;">Overall goal in this scene / arc</label>
-        <input id="characterGoal" type="text" placeholder="Example: Rally Wano, forge the world-tree of souls, defeat Kaido">
-      </div>
-    </div>
-    <div class="col">
-      <div class="section-card">
-        <div class="section-title">Theme / Vibe / Devil Fruit</div>
-        <label for="themeVibe">Theme / Vibe / Devil Fruit</label>
-        <input id="themeVibe" type="text" placeholder="Example: Storm-touched soul weaver, mechanical nature god">
-        <button class="btn-secondary" style="margin-top:6px;" id="randomThemeBtn">
-          🎲 Random Theme / Vibe / Devil Fruit
-        </button>
-        <div class="small-note">
-          Uses a pool of 100+ curated Devil Fruit themes when you hit the random button.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <hr>
-
-  <!-- Generator Inputs -->
-  <h2>Generator Inputs</h2>
-  <div class="row">
-    <div class="col">
-      <div class="section-card">
-        <div class="section-title">
-          Core Fruit Settings
-          <span class="complexity-pill">Basic+</span>
-        </div>
-
-        <label for="effectType">Effect Type</label>
-        <select id="effectType">
-          <option value="">-- Choose --</option>
-          <option value="logia">Logia (elemental)</option>
-          <option value="paramecia">Paramecia (reality / body / odd)</option>
-          <option value="zoan">Zoan (beast)</option>
-          <option value="mythical">Mythical Zoan</option>
-          <option value="ancient">Ancient Zoan</option>
-          <option value="special">Special / Hybrid</option>
-        </select>
-
-        <label for="devilFruitType" style="margin-top:6px;">Devil Fruit Type (user-facing)</label>
-        <input id="devilFruitType" type="text" placeholder="Example: Soul-Soul Fruit, Model: World-Tree">
-
-        <label for="numAbilities" style="margin-top:6px;">Number of Abilities</label>
-        <select id="numAbilities">
-          <option value="1">1</option>
-          <option value="2" selected>2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-        </select>
-
-        <label for="powerLevel" style="margin-top:6px;">Power Level</label>
-        <select id="powerLevel">
-          <option value="low">Low</option>
-          <option value="mid">Mid</option>
-          <option value="high" selected>High</option>
-          <option value="broken">Broken / Endgame</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="col">
-      <div class="section-card basic-only">
-        <div class="section-title">
-          Desired Outcome
-          <span class="complexity-pill">Basic+</span>
-        </div>
-        <div class="tag-row" id="desiredOutcome">
-          <label><input type="checkbox" value="utility"> Utility / Versatility</label>
-          <label><input type="checkbox" value="mobility"> Mobility / Positioning</label>
-          <label><input type="checkbox" value="defense"> Defense / Tanking</label>
-          <label><input type="checkbox" value="control"> Crowd Control</label>
-          <label><input type="checkbox" value="support"> Support / Healing</label>
-          <label><input type="checkbox" value="debuff"> Debuff / Disruption</label>
-          <label><input type="checkbox" value="highDamage"> High Damage / Burst</label>
-        </div>
-        <div class="small-note">
-          NEW: “High Damage / Burst” added to the Desired Outcomes.
-        </div>
-      </div>
-
-      <div class="section-card moderate-only complex-only">
-        <div class="section-title">
-          Combo Focus (multi-select)
-          <span class="complexity-pill">Moderate+</span>
-        </div>
-        <div class="tag-row" id="comboFocus">
-          <label><input type="checkbox" value="melee"> Melee combos</label>
-          <label><input type="checkbox" value="ranged"> Ranged barrages</label>
-          <label><input type="checkbox" value="area"> Area denial / zones</label>
-          <label><input type="checkbox" value="setups"> Setup into finishers</label>
-          <label><input type="checkbox" value="defensive"> Defensive counter-play</label>
-          <label><input type="checkbox" value="mobility"> Movement & reposition</label>
-          <label><input type="checkbox" value="team"> Team synergies</label>
-          <label><input type="checkbox" value="utility"> Utility chains</label>
-        </div>
-        <div class="small-note">
-          You can now select <strong>multiple</strong> combo focuses at once via checkboxes.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Advanced Options (Moderate / Complex only, but comments are always visible) -->
-  <div id="advancedOptions" class="moderate-only complex-only">
-    <hr>
-    <h2>Advanced Inputs (Moderate / Complex)</h2>
-    <div class="row">
-      <div class="col">
-        <div class="section-card moderate-only complex-only">
-          <div class="section-title">
-            Secondary Constraints
-            <span class="complexity-pill">Moderate+</span>
+      <main class="app-main">
+        <!-- LEFT: Inputs -->
+        <section class="panel panel-inputs">
+          <!-- Character Context -->
+          <div class="card">
+            <h2>
+              Character Context
+              <span
+                class="help-icon"
+                title="Basic info so the abilities feel tailored to this character’s theme and role."
+                >?</span
+              >
+            </h2>
+            <div class="field-grid">
+              <label>
+                Name
+                <input id="char-name" type="text" placeholder="Elren, Panther, etc." />
+              </label>
+              <label>
+                Combat Role
+                <input
+                  id="char-role"
+                  type="text"
+                  placeholder="Frontline bruiser, sniper, support, etc."
+                />
+              </label>
+            </div>
+            <label>
+              Theme / Vibe
+              <input
+                id="char-theme"
+                type="text"
+                placeholder="Red lightning, gravity-bending, soul flames, etc."
+              />
+            </label>
+            <label>
+              Backstory / Notes
+              <textarea
+                id="char-backstory"
+                rows="3"
+                placeholder="Quick backstory, goals, personality, emotional beats..."
+              ></textarea>
+            </label>
           </div>
-          <label for="limitations">Limitations / Costs</label>
-          <textarea id="limitations" placeholder="Example: Fruit drains soul fragments, overuse petrifies body into wood, etc."></textarea>
 
-          <label for="signatureVisuals" style="margin-top:6px;">Signature Visual Motifs</label>
-          <textarea id="signatureVisuals" placeholder="Example: Red-black lightning, auroras of soul-orbs, mechanical roots and branches."></textarea>
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="section-card complex-only">
-          <div class="section-title">
-            Complex Tuning
-            <span class="complexity-pill">Complex Only</span>
+          <!-- Page complexity selector (Basic / Moderate / Complex) -->
+          <div class="card">
+            <h2>
+              Page Complexity
+              <span
+                class="help-icon"
+                title="Choose how many options you want to see. Basic = fastest. Complex = full control."
+                >?</span
+              >
+            </h2>
+            <label>
+              Level
+              <select id="ui-complexity">
+                <option value="basic">Basic – Quick setup</option>
+                <option value="moderate" selected>Moderate – Recommended</option>
+                <option value="complex">Complex – All options</option>
+              </select>
+            </label>
+            <p class="hint">
+              Basic: pick effect type, fruit type, number of abilities, power level. <br />
+              Moderate: adds desired outcome and key options. <br />
+              Complex: shows every advanced control.
+            </p>
           </div>
-          <label for="rulesHooks">Specific Rules Hooks / System Notes</label>
-          <textarea id="rulesHooks" placeholder="Example: Once per long rest limit, stacking conditions, hit dice costs, etc."></textarea>
-          <label for="inspirationSources" style="margin-top:6px;">Extra Inspiration Sources</label>
-          <textarea id="inspirationSources" placeholder="Other series, characters, or mechanics to mimic."></textarea>
-        </div>
-      </div>
+
+          <!-- Effect Types -->
+          <div class="card">
+            <h2>
+              A. Effect Types
+              <span
+                class="help-icon"
+                title="What kind of job these abilities should do in combat: damage, defense, support, control, etc."
+                >?</span
+              >
+            </h2>
+            <div class="checkbox-grid">
+              <label>
+                <input type="checkbox" name="effectTypes" value="Offense" />
+                Offense (damage, burst, big hits)
+              </label>
+              <label>
+                <input type="checkbox" name="effectTypes" value="Defense" />
+                Defense (barriers, armor, damage reduction)
+              </label>
+              <label>
+                <input type="checkbox" name="effectTypes" value="Support" />
+                Support (buffs, healing, team utility)
+              </label>
+              <label>
+                <input type="checkbox" name="effectTypes" value="Control" />
+                Control (crowd control, traps, positioning)
+              </label>
+              <label>
+                <input type="checkbox" name="effectTypes" value="Utility" />
+                Utility (movement, scouting, information)
+              </label>
+              <label>
+                <input type="checkbox" name="effectTypes" value="Reality-Bending" />
+                Reality-Bending (space, time, gravity, souls)
+              </label>
+            </div>
+            <label data-ui-min="2">
+              Extra Effect Notes
+              <textarea
+                id="effect-notes"
+                rows="2"
+                placeholder="e.g. one big finisher, one defensive reaction, one team buff…"
+              ></textarea>
+            </label>
+          </div>
+
+          <!-- Devil Fruit Types (box B) -->
+          <div class="card">
+            <h2>
+              B. Devil Fruit Types
+              <span
+                class="help-icon"
+                title="Pick the broad categories of fruits involved. Specific fruits can go in the notes."
+                >?</span
+              >
+            </h2>
+            <p class="hint">
+              Select the <strong>categories</strong> of devil fruits involved in this combo (not specific
+              powers like gravity or ice).
+            </p>
+            <div class="checkbox-grid">
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Logia" />
+                Logia (elemental body)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Paramecia" />
+                Paramecia (reality-warping, objects, special rules)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Zoan" />
+                Zoan (animal / hybrid transformation)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Mythical Zoan" />
+                Mythical Zoan (mythic beast / deity)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Ancient Zoan" />
+                Ancient Zoan (prehistoric creatures)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Special" />
+                Special / Unique (weird, hard-to-classify fruits)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Artificial" />
+                Artificial / SMILE-style fruits
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Awakened" />
+                Awakened fruit (environment + body changes)
+              </label>
+              <label>
+                <input type="checkbox" name="fruitTraits" value="Hybrid Combo" />
+                Hybrid multi-fruit synergy (multiple powers combined)
+              </label>
+            </div>
+            <label data-ui-min="2">
+              Extra Fruit Notes
+              <textarea
+                id="fruit-notes"
+                rows="2"
+                placeholder="Specific fruits or combos, e.g. Kaido’s dragon + hormone-style body control + ice-themed flavor."
+              ></textarea>
+            </label>
+          </div>
+
+          <!-- Outcome / Shape (Box C) -->
+          <div class="card" data-ui-min="1">
+            <h2>
+              C. Desired Outcome / Ability Shape
+              <span
+                class="help-icon"
+                title="How the ability behaves on the battlefield: barrier, finisher, zone, mobility, etc."
+                >?</span
+              >
+            </h2>
+            <p class="hint">
+              What do you want the combo to <strong>actually do</strong> in the scene? Pick a few, then use the
+              notes box to specify an exact outcome.
+            </p>
+            <div class="checkbox-grid">
+              <label>
+                <input type="checkbox" name="styleMods" value="Barrier" />
+                Barrier / Shield (block or reduce damage)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Restrain" />
+                Restrain / Bind (immobilize, grapple, root, imprison)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Zone" />
+                Area Denial / Zone (hazardous terrain, control area)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Morphing" />
+                Morphing / Weapon Form (change shape, weaponization)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Overcharge" />
+                Overcharge / Self-Buff (power spike at a cost)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Mobility" />
+                Mobility / Gap Closer / Escape
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Debuff" />
+                Debuff / Weakening (reduce stats, impose conditions)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Explosion" />
+                Explosion / Burst (big AoE damage)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Battlefield Control" />
+                Battlefield Control (push/pull, reposition, knockback)
+              </label>
+              <label>
+                <input type="checkbox" name="styleMods" value="Signature Finisher" />
+                Signature Finisher (big named move, ultimate)
+              </label>
+            </div>
+            <label>
+              Outcome / Effect Notes
+              <textarea
+                id="style-notes"
+                rows="2"
+                placeholder="Describe the exact outcome you want: e.g. 'A red-lightning dome that blocks a blast and then explodes outward.'"
+              ></textarea>
+            </label>
+          </div>
+
+          <!-- Combo focus + explanation -->
+          <div class="card" data-ui-min="1">
+            <h2>
+              Combo Focus
+              <span
+                class="help-icon"
+                title="What kind of devil fruit combo style these abilities should lean into."
+                >?</span
+              >
+            </h2>
+            <label>
+              Style of combo
+              <select id="combo-focus">
+                <option value="any">
+                  Any style that fits (single fruit or combos)
+                </option>
+                <option value="single">
+                  Single-fruit style techniques
+                </option>
+                <option value="combo">
+                  Multi-fruit combo techniques
+                </option>
+                <option value="transformation">
+                  Transformation mode (Zoan / hybrid focus)
+                </option>
+                <option value="awakening">
+                  Environmental awakening / terrain takeover
+                </option>
+              </select>
+            </label>
+            <label class="checkbox-inline" data-ui-min="2">
+              <input type="checkbox" id="include-combo-explanation" />
+              Include a short <strong>combo logic</strong> note in the output (how the fruits interact).
+            </label>
+          </div>
+        </section>
+
+        <!-- RIGHT: Prompt + Output -->
+        <section class="panel panel-output">
+          <div class="card">
+            <h2>Prompt Preview (auto-built)</h2>
+            <p class="hint">
+              This is exactly what gets sent to ChatGPT. You can copy it if you want to reuse or
+              tweak manually.
+            </p>
+            <textarea id="prompt-preview" readonly rows="14"></textarea>
+          </div>
+
+          <!-- Power level reference -->
+          <div class="card">
+            <details class="power-ref">
+              <summary>Power Level Reference (1–10)</summary>
+              <div class="power-ref-body">
+                <p class="hint">
+                  How power level influences DC, damage, area, effects, and drawbacks.
+                </p>
+                <ul class="power-ref-list">
+                  <li><strong>1:</strong> DC 4–6. Very weak / trivial. 0–1 die or small effect. Mostly utility or soft flavor.</li>
+                  <li><strong>2:</strong> DC 6–7. Very weak but noticeable. 1–2 dice or a light debuff.</li>
+                  <li><strong>3:</strong> DC 7–9. Weak but useful. 1–2 dice + minor rider or small control.</li>
+                  <li><strong>4:</strong> DC 9–11. Solid low-tier move. 2–3 dice, small area or moderate utility.</li>
+                  <li><strong>5:</strong> DC 11–13. Standard PC-level ability. 3–4 dice, decent effect.</li>
+                  <li><strong>6:</strong> DC 13–16. Strong PC or elite enemy move. 4–5 dice or strong control.</li>
+                  <li><strong>7:</strong> DC 16–20. Boss-tier. 6–8 dice, big impact, clear drawback (HP cost, limited uses, etc.).</li>
+                  <li><strong>8:</strong> DC 20–23. Very high. 8–10+ dice or large area with strong conditions; serious drawback.</li>
+                  <li><strong>9:</strong> DC 24–28. Mythic-level. Can do 100+ total damage, large area, multiple riders and lasting effects; heavy drawback.</li>
+                  <li><strong>10:</strong> DC 26–32. Godlike / reality-warping. Encounter-or arc-defining move with huge damage, massive area, multiple conditions and terrain changes; massive drawback.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+
+          <div class="card">
+            <h2>
+              D. Output Preferences
+              <span
+                class="help-icon"
+                title="How many abilities you want and how crunchy or cinematic they should be."
+                >?</span
+              >
+            </h2>
+            <div class="field-grid">
+              <label data-ui-min="0">
+                # of abilities
+                <input id="num-abilities" type="number" min="1" max="6" value="3" />
+              </label>
+              <label data-ui-min="1">
+                Output style
+                <select id="format-style">
+                  <option value="stat-block">
+                    DnD-style stat block / spell card (compact but structured)
+                  </option>
+                  <option value="minimal">
+                    Very minimal quick reference (shorter text, to the point)
+                  </option>
+                  <option value="cinematic">
+                    Longer, more descriptive & cinematic (extra flavor)
+                  </option>
+                </select>
+              </label>
+            </div>
+
+            <div class="field-grid" data-ui-min="1">
+              <label>
+                Mechanics detail level
+                <span
+                  class="help-icon"
+                  title="Simple = quick table use. Detailed = includes more conditions, scaling notes, and special rules."
+                  >?</span
+                >
+                <select id="mechanics-detail">
+                  <option value="simple">
+                    Simple: action type, range, save, damage, and 1–2 core effects
+                  </option>
+                  <option value="detailed">
+                    Detailed: include conditions, scaling notes, and special rules
+                  </option>
+                </select>
+              </label>
+
+              <label>
+                Complexity
+                <span
+                  class="help-icon"
+                  title="Controls how many moving parts each ability has. Simple avoids tracking headaches; Complex allows multi-stage or lingering effects."
+                  >?</span
+                >
+                <select id="complexity-level">
+                  <option value="simple">Simple</option>
+                  <option value="moderate" selected>Moderate</option>
+                  <option value="complex">Complex</option>
+                </select>
+              </label>
+            </div>
+
+            <label data-ui-min="1">
+              Ability package type
+              <span
+                class="help-icon"
+                title="What kind of kit you’re trying to build: a few iconic moves, an ultimate, a defensive + mobility pair, or a full kit."
+                >?</span
+              >
+              <select id="ability-package">
+                <option value="signature">
+                  3 Signature Moves (default)
+                </option>
+                <option value="finisher">
+                  1 Ultimate Finisher
+                </option>
+                <option value="defense-mobility">
+                  1 Defensive Reaction + 1 Mobility Tool
+                </option>
+                <option value="full-kit">
+                  A Full Kit (4–5 diverse abilities)
+                </option>
+              </select>
+            </label>
+
+            <!-- Model choice -->
+            <label data-ui-min="2">
+              Model / AI power level
+              <select id="model-choice">
+                <option value="gpt-4.1-mini">
+                  Fast & cheap (gpt-4.1-mini) – recommended for most use
+                </option>
+                <option value="gpt-4.1">
+                  Stronger (gpt-4.1) – better quality, higher cost
+                </option>
+                <option value="gpt-5.1">
+                  Max power (gpt-5.1) – requires verified org; may error if not allowed
+                </option>
+              </select>
+            </label>
+
+            <!-- Preferred DC -->
+            <label data-ui-min="2">
+              Preferred DC (optional, guideline)
+              <span
+                class="help-icon"
+                title="If you care about a specific DC or formula, put it here. Otherwise it’s chosen from the power ladder."
+                >?</span
+              >
+              <input
+                id="preferred-dc"
+                type="text"
+                placeholder="e.g. 18 or 8 + proficiency + CHA"
+              />
+            </label>
+
+            <!-- Power level number -->
+            <label>
+              Power Level (1–10)
+              <span
+                class="help-icon"
+                title="How over-the-top these abilities are. Use the Power Level Reference card for details."
+                >?</span
+              >
+              <div class="power-row">
+                <input
+                  id="power-level"
+                  type="number"
+                  min="1"
+                  max="10"
+                  value="6"
+                  step="1"
+                />
+                <span id="power-level-display" class="power-level-display">
+                  6 – Strong PC / elite enemy
+                </span>
+              </div>
+            </label>
+
+            <label class="checkbox-inline" data-ui-min="1">
+              <input type="checkbox" id="tone-epic" checked />
+              Make the tone epic and anime-cinematic, but keep mechanics usable at the table.
+            </label>
+            <label data-ui-min="2">
+              Extra Output Notes
+              <textarea
+                id="output-notes"
+                rows="2"
+                placeholder="e.g. one defensive, one offensive, one support; avoid super complex tracking; limit to 5–7 lines per ability."
+              ></textarea>
+            </label>
+          </div>
+
+          <div class="card">
+            <div class="actions">
+              <button id="generate-btn">Generate Abilities</button>
+              <button id="randomize-btn" class="chip small">Randomize Inputs</button>
+              <span id="status-text"></span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Generated Abilities</h2>
+
+            <!-- View / export controls -->
+            <div class="results-toolbar">
+              <div class="view-toggle">
+                <button id="view-cards-btn" class="chip active">Cards</button>
+                <button id="view-table-btn" class="chip">Table</button>
+              </div>
+              <div class="results-actions">
+                <button id="copy-all-btn" class="chip small">Copy All</button>
+                <button id="download-txt-btn" class="chip small">Download Stat Sheet</button>
+                <button id="print-btn" class="chip small">Print / PDF</button>
+                <button id="undo-reroll-btn" class="chip small subtle" disabled>
+                  Undo Last Reroll
+                </button>
+              </div>
+            </div>
+
+            <!-- Saved sets (databank) -->
+            <div class="saved-toolbar">
+              <button id="save-set-btn" class="chip small">Save Set</button>
+              <select id="load-set-select">
+                <option value="">Load saved set…</option>
+              </select>
+              <button id="delete-set-btn" class="chip small subtle">
+                Delete
+              </button>
+            </div>
+
+            <p class="hint reroll-hint">
+              Reroll = new ability with the same inputs &amp; power level, but a different idea.
+            </p>
+
+            <div id="results" class="results-box">
+              <p class="hint">
+                Each generated ability will show up in its own card with: name, role, summary, cinematic
+                description, and key mechanics (range, DC, damage, effect). Switch between card and
+                table view above.
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="app-footer">
+        <small>
+          All on one page. Built for quick use at the table: check boxes, add flavor, press
+          Generate.
+        </small>
+      </footer>
     </div>
-  </div>
 
-  <hr>
-
-  <!-- Boxes A, B, C, D (comments always visible, even on BASIC) -->
-  <h2>Ability Boxes (A–D)</h2>
-  <p class="small-note">
-    Each box is a potential ability or combo. <strong>Comment boxes always stay visible</strong>, even on Basic mode.
-  </p>
-
-  <div class="row">
-    <!-- Box A -->
-    <div class="col">
-      <div class="section-card">
-        <div class="section-title">Box A – Core / Signature Move</div>
-        <label for="boxA-main">Concept / Name</label>
-        <input id="boxA-main" type="text" placeholder="Example: Soulstorm Cataclysm">
-        <label for="boxA-notes" style="margin-top:6px;">Notes / Constraints (A)</label>
-        <textarea id="boxA-notes" placeholder="Comment box A – how this should feel, limits, cinematic beats."></textarea>
-      </div>
-    </div>
-
-    <!-- Box B -->
-    <div class="col">
-      <div class="section-card">
-        <div class="section-title">Box B – Secondary / Utility</div>
-        <label for="boxB-main">Concept / Name</label>
-        <input id="boxB-main" type="text" placeholder="Example: Wano’s Rooted Bulwark">
-        <label for="boxB-notes" style="margin-top:6px;">Notes / Constraints (B)</label>
-        <textarea id="boxB-notes" placeholder="Comment box B – defenses, shields, area control, etc."></textarea>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <!-- Box C -->
-    <div class="col">
-      <div class="section-card">
-        <div class="section-title">Box C – Support / Control</div>
-        <label for="boxC-main">Concept / Name</label>
-        <input id="boxC-main" type="text" placeholder="Example: Soul Orchard Sanctuary">
-        <label for="boxC-notes" style="margin-top:6px;">Notes / Constraints (C)</label>
-        <textarea id="boxC-notes" placeholder="Comment box C – healing, buffs, crowd control, etc."></textarea>
-      </div>
-    </div>
-
-    <!-- Box D -->
-    <div class="col">
-      <div class="section-card">
-        <div class="section-title">Box D – Finisher / High-Risk</div>
-        <label for="boxD-main">Concept / Name</label>
-        <input id="boxD-main" type="text" placeholder="Example: World-Tree Judgement">
-        <label for="boxD-notes" style="margin-top:6px;">Notes / Constraints (D)</label>
-        <textarea id="boxD-notes" placeholder="Comment box D – high risk, high reward, burst damage, etc."></textarea>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<script src="script.js" defer></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
