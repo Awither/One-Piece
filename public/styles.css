@@ -143,6 +143,21 @@ label textarea:focus {
   gap: 6px;
 }
 
+/* Help icons */
+.help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 1px solid #4b5563;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  cursor: help;
+}
+
 /* Power level display */
 .power-row {
   display: flex;
@@ -188,13 +203,18 @@ input[type="checkbox"] {
   font-size: 0.78rem;
 }
 
-/* Results container – now just a wrapper */
+/* Results container – wrapper */
 .results-box {
   padding: 0;
   border: none;
   background: transparent;
   min-height: 0;
   white-space: normal;
+}
+
+/* Reroll hint */
+.reroll-hint {
+  margin-bottom: 6px;
 }
 
 /* Grid of ability cards */
@@ -272,6 +292,14 @@ input[type="checkbox"] {
   font-size: 0.8rem;
 }
 
+/* Combo logic text */
+.ability-card-combo-logic {
+  margin-top: 4px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
 /* Small inline actions inside card */
 .ability-card-actions {
   margin-top: 6px;
@@ -344,6 +372,11 @@ input[type="checkbox"] {
 
 .chip:hover {
   border-color: var(--accent);
+}
+
+.chip[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 /* Table view */
