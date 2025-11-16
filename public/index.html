@@ -20,7 +20,14 @@
         <section class="panel panel-inputs">
           <!-- Character Context -->
           <div class="card">
-            <h2>Character Context</h2>
+            <h2>
+              Character Context
+              <span
+                class="help-icon"
+                title="Basic info so the abilities feel tailored to this character’s theme and role."
+                >?</span
+              >
+            </h2>
             <div class="field-grid">
               <label>
                 Name
@@ -55,7 +62,14 @@
 
           <!-- Effect Types -->
           <div class="card">
-            <h2>A. Effect Types</h2>
+            <h2>
+              A. Effect Types
+              <span
+                class="help-icon"
+                title="What kind of job these abilities should do in combat: damage, defense, support, control, etc."
+                >?</span
+              >
+            </h2>
             <div class="checkbox-grid">
               <label>
                 <input type="checkbox" name="effectTypes" value="Offense" />
@@ -92,9 +106,16 @@
             </label>
           </div>
 
-          <!-- Devil Fruit Types (box B, cleaned) -->
+          <!-- Devil Fruit Types (box B) -->
           <div class="card">
-            <h2>B. Devil Fruit Types</h2>
+            <h2>
+              B. Devil Fruit Types
+              <span
+                class="help-icon"
+                title="Pick the broad categories of fruits involved. Specific fruits can go in the notes."
+                >?</span
+              >
+            </h2>
             <p class="hint">
               Select the <strong>categories</strong> of devil fruits involved in this combo (not specific
               powers like gravity or ice).
@@ -147,9 +168,16 @@
             </label>
           </div>
 
-          <!-- Outcome / Shape (Box C reworked) -->
+          <!-- Outcome / Shape (Box C) -->
           <div class="card">
-            <h2>C. Desired Outcome / Ability Shape</h2>
+            <h2>
+              C. Desired Outcome / Ability Shape
+              <span
+                class="help-icon"
+                title="How the ability behaves on the battlefield: barrier, finisher, zone, mobility, etc."
+                >?</span
+              >
+            </h2>
             <p class="hint">
               What do you want the combo to <strong>actually do</strong> in the scene? Pick a few, then use the
               notes box to specify an exact outcome.
@@ -206,97 +234,39 @@
             </label>
           </div>
 
-          <!-- Output Preferences (Box D improved) -->
+          <!-- Combo focus + explanation -->
           <div class="card">
-            <h2>D. Output Preferences</h2>
-            <div class="field-grid">
-              <label>
-                # of abilities
-                <input id="num-abilities" type="number" min="1" max="6" value="3" />
-              </label>
-              <label>
-                Output style
-                <select id="format-style">
-                  <option value="stat-block">
-                    DnD-style stat block / spell card (compact but structured)
-                  </option>
-                  <option value="minimal">
-                    Very minimal quick reference (shorter text, to the point)
-                  </option>
-                  <option value="cinematic">
-                    Longer, more descriptive & cinematic (extra flavor)
-                  </option>
-                </select>
-              </label>
-            </div>
-
-            <!-- Model choice -->
+            <h2>
+              Combo Focus
+              <span
+                class="help-icon"
+                title="What kind of devil fruit combo style these abilities should lean into."
+                >?</span
+              >
+            </h2>
             <label>
-              Model / AI power level
-              <select id="model-choice">
-                <option value="gpt-4.1-mini">
-                  Fast & cheap (gpt-4.1-mini) – recommended for most use
+              Style of combo
+              <select id="combo-focus">
+                <option value="any">
+                  Any style that fits (single fruit or combos)
                 </option>
-                <option value="gpt-4.1">
-                  Stronger (gpt-4.1) – better quality, higher cost
+                <option value="single">
+                  Single-fruit style techniques
                 </option>
-                <option value="gpt-5.1">
-                  Max power (gpt-5.1) – requires verified org; may error if not allowed
+                <option value="combo">
+                  Multi-fruit combo techniques
+                </option>
+                <option value="transformation">
+                  Transformation mode (Zoan / hybrid focus)
+                </option>
+                <option value="awakening">
+                  Environmental awakening / terrain takeover
                 </option>
               </select>
             </label>
-
-            <label>
-              Mechanics detail level
-              <select id="mechanics-detail">
-                <option value="simple">
-                  Simple: action type, range, save, damage, and 1–2 core effects
-                </option>
-                <option value="detailed">
-                  Detailed: include conditions, scaling notes, and special rules
-                </option>
-              </select>
-            </label>
-
-            <!-- Preferred DC -->
-            <label>
-              Preferred DC (optional, guideline)
-              <input
-                id="preferred-dc"
-                type="text"
-                placeholder="e.g. 18 or 8 + proficiency + CHA"
-              />
-            </label>
-
-            <!-- Power level number -->
-            <label>
-              Power Level (1–10)
-              <div class="power-row">
-                <input
-                  id="power-level"
-                  type="number"
-                  min="1"
-                  max="10"
-                  value="6"
-                  step="1"
-                />
-                <span id="power-level-display" class="power-level-display">
-                  6 – High
-                </span>
-              </div>
-            </label>
-
             <label class="checkbox-inline">
-              <input type="checkbox" id="tone-epic" checked />
-              Make the tone epic and anime-cinematic, but keep mechanics usable at the table.
-            </label>
-            <label>
-              Extra Output Notes
-              <textarea
-                id="output-notes"
-                rows="2"
-                placeholder="e.g. one defensive, one offensive, one support; avoid super complex tracking; limit to 5–7 lines per ability."
-              ></textarea>
+              <input type="checkbox" id="include-combo-explanation" />
+              Include a short <strong>combo logic</strong> note in the output (how the fruits interact).
             </label>
           </div>
         </section>
@@ -337,6 +307,160 @@
           </div>
 
           <div class="card">
+            <h2>
+              D. Output Preferences
+              <span
+                class="help-icon"
+                title="How many abilities you want and how crunchy or cinematic they should be."
+                >?</span
+              >
+            </h2>
+            <div class="field-grid">
+              <label>
+                # of abilities
+                <input id="num-abilities" type="number" min="1" max="6" value="3" />
+              </label>
+              <label>
+                Output style
+                <select id="format-style">
+                  <option value="stat-block">
+                    DnD-style stat block / spell card (compact but structured)
+                  </option>
+                  <option value="minimal">
+                    Very minimal quick reference (shorter text, to the point)
+                  </option>
+                  <option value="cinematic">
+                    Longer, more descriptive & cinematic (extra flavor)
+                  </option>
+                </select>
+              </label>
+            </div>
+
+            <div class="field-grid">
+              <label>
+                Mechanics detail level
+                <span
+                  class="help-icon"
+                  title="Simple = quick table use. Detailed = includes more conditions, scaling notes, and special rules."
+                  >?</span
+                >
+                <select id="mechanics-detail">
+                  <option value="simple">
+                    Simple: action type, range, save, damage, and 1–2 core effects
+                  </option>
+                  <option value="detailed">
+                    Detailed: include conditions, scaling notes, and special rules
+                  </option>
+                </select>
+              </label>
+
+              <label>
+                Complexity
+                <span
+                  class="help-icon"
+                  title="Controls how many moving parts each ability has. Simple avoids tracking headaches; Complex allows multi-stage or lingering effects."
+                  >?</span
+                >
+                <select id="complexity-level">
+                  <option value="simple">Simple</option>
+                  <option value="moderate" selected>Moderate</option>
+                  <option value="complex">Complex</option>
+                </select>
+              </label>
+            </div>
+
+            <label>
+              Ability package type
+              <span
+                class="help-icon"
+                title="What kind of kit you’re trying to build: a few iconic moves, an ultimate, a defensive + mobility pair, or a full kit."
+                >?</span
+              >
+              <select id="ability-package">
+                <option value="signature">
+                  3 Signature Moves (default)
+                </option>
+                <option value="finisher">
+                  1 Ultimate Finisher
+                </option>
+                <option value="defense-mobility">
+                  1 Defensive Reaction + 1 Mobility Tool
+                </option>
+                <option value="full-kit">
+                  A Full Kit (4–5 diverse abilities)
+                </option>
+              </select>
+            </label>
+
+            <!-- Model choice -->
+            <label>
+              Model / AI power level
+              <select id="model-choice">
+                <option value="gpt-4.1-mini">
+                  Fast & cheap (gpt-4.1-mini) – recommended for most use
+                </option>
+                <option value="gpt-4.1">
+                  Stronger (gpt-4.1) – better quality, higher cost
+                </option>
+                <option value="gpt-5.1">
+                  Max power (gpt-5.1) – requires verified org; may error if not allowed
+                </option>
+              </select>
+            </label>
+
+            <!-- Preferred DC -->
+            <label>
+              Preferred DC (optional, guideline)
+              <span
+                class="help-icon"
+                title="If you care about a specific DC or formula, put it here. Otherwise it’s chosen from the power ladder."
+                >?</span
+              >
+              <input
+                id="preferred-dc"
+                type="text"
+                placeholder="e.g. 18 or 8 + proficiency + CHA"
+              />
+            </label>
+
+            <!-- Power level number -->
+            <label>
+              Power Level (1–10)
+              <span
+                class="help-icon"
+                title="How over-the-top these abilities are. Use the Power Level Reference card for details."
+                >?</span
+              >
+              <div class="power-row">
+                <input
+                  id="power-level"
+                  type="number"
+                  min="1"
+                  max="10"
+                  value="6"
+                  step="1"
+                />
+                <span id="power-level-display" class="power-level-display">
+                  6 – Strong PC / elite enemy
+                </span>
+              </div>
+            </label>
+
+            <label class="checkbox-inline">
+              <input type="checkbox" id="tone-epic" checked />
+              Make the tone epic and anime-cinematic, but keep mechanics usable at the table.
+            </label>
+            <label>
+              Extra Output Notes
+              <textarea
+                id="output-notes"
+                rows="2"
+                placeholder="e.g. one defensive, one offensive, one support; avoid super complex tracking; limit to 5–7 lines per ability."
+              ></textarea>
+            </label>
+          </div>
+
+          <div class="card">
             <div class="actions">
               <button id="generate-btn">Generate Abilities</button>
               <span id="status-text"></span>
@@ -356,6 +480,9 @@
                 <button id="copy-all-btn" class="chip small">Copy All</button>
                 <button id="download-txt-btn" class="chip small">Download Stat Sheet</button>
                 <button id="print-btn" class="chip small">Print / PDF</button>
+                <button id="undo-reroll-btn" class="chip small subtle" disabled>
+                  Undo Last Reroll
+                </button>
               </div>
             </div>
 
@@ -370,9 +497,13 @@
               </button>
             </div>
 
+            <p class="hint reroll-hint">
+              Reroll = new ability with the same inputs &amp; power level, but a different idea.
+            </p>
+
             <div id="results" class="results-box">
               <p class="hint">
-                Each generated ability will show up in its own card with: name, summary, cinematic
+                Each generated ability will show up in its own card with: name, role, summary, cinematic
                 description, and key mechanics (range, DC, damage, effect). Switch between card and
                 table view above.
               </p>
@@ -392,4 +523,3 @@
     <script src="script.js"></script>
   </body>
 </html>
-
