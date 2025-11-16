@@ -74,7 +74,10 @@ function buildPrompt() {
   const powerLevel =
     parseInt(document.getElementById("power-level").value, 10) || 6;
 
-  const comboFocusValues = getCheckedValues("comboFocus");
+  const comboFocusChecks = Array.from(
+    document.querySelectorAll('input[name="comboFocus"]:checked')
+  ).map((el) => el.value);
+
   const includeComboExplanation = document.getElementById(
     "include-combo-explanation"
   )?.checked;
@@ -87,10 +90,12 @@ function buildPrompt() {
       " original, devil-fruit-based abilities for a One Piece–inspired DnD campaign."
   );
   lines.push("");
+
   lines.push("=== Character Context ===");
   lines.push(`Name: ${charName || "Unnamed PC"}`);
   if (charRole) lines.push(`Combat Role: ${charRole}`);
-  if (charTheme) lines.push(`Theme / Vibe / Devil Fruit: ${charTheme}`);
+  if (charTheme)
+    lines.push(`Theme / Vibe / Devil Fruit Focus: ${charTheme}`);
   if (charBackstory) lines.push(`Backstory / Notes: ${charBackstory}`);
   lines.push("");
 
@@ -124,36 +129,10 @@ function buildPrompt() {
   lines.push("");
 
   lines.push("=== Combo Focus ===");
-  if (!comboFocusValues.length) {
-    lines.push(
-      "Combo style: Any combination style that feels thematically cool and appropriate for the chosen fruits."
-    );
+  if (comboFocusChecks.length) {
+    lines.push("Combo style selections: " + comboFocusChecks.join(", "));
   } else {
-    lines.push(
-      "Combo styles to emphasize: " + comboFocusValues.join(", ") + "."
-    );
-    const comboDescriptions = [];
-    if (comboFocusValues.includes("single")) {
-      comboDescriptions.push(
-        "Single-fruit techniques should feel like advanced or awakened uses of one core fruit."
-      );
-    }
-    if (comboFocusValues.includes("combo")) {
-      comboDescriptions.push(
-        "Multi-fruit combo techniques should clearly showcase how multiple fruits or power sources interact in one move."
-      );
-    }
-    if (comboFocusValues.includes("transformation")) {
-      comboDescriptions.push(
-        "Transformation mode should emphasize Zoan / hybrid forms, physicality, and powers expressed through that form."
-      );
-    }
-    if (comboFocusValues.includes("awakening")) {
-      comboDescriptions.push(
-        "Environmental awakening should reshape terrain, environment, and battlefield space using the fruit powers."
-      );
-    }
-    comboDescriptions.forEach((l) => lines.push(l));
+    lines.push("Combo style: Any combination style that fits thematically.");
   }
   if (includeComboExplanation) {
     lines.push(
@@ -169,74 +148,54 @@ function buildPrompt() {
       ". Each ability MUST include: (1) Ability Name, (2) Role, (3) Summary, (4) Cinematic Description, (5) Simple DnD mechanics."
   );
 
-  // Ability package description
+  // Ability package
   if (abilityPackage === "signature") {
-    lines.push(
-      "Ability package: 3 Signature Moves. Design a small set of iconic abilities that represent this character’s style. Try to cover different roles (offense, defense, mobility, etc.) where appropriate."
-    );
+    lines.push("Ability package: 3 Signature Moves. Build a set of iconic moves.");
   } else if (abilityPackage === "finisher") {
     lines.push(
-      "Ability package: 1 Ultimate Finisher. Focus on a single, extremely memorable, high-impact move that can end or define an encounter, with a major drawback."
+      "Ability package: 1 Ultimate Finisher. One huge, high-impact move with a major drawback."
     );
   } else if (abilityPackage === "defense-mobility") {
     lines.push(
-      "Ability package: 1 Defensive Reaction + 1 Mobility Tool. One ability should be clearly defensive or reactive; the other should help reposition, escape, or engage."
+      "Ability package: 1 Defensive Reaction + 1 Mobility Tool. Two complementary moves."
     );
   } else if (abilityPackage === "full-kit") {
-    lines.push(
-      "Ability package: A Full Kit (4–5 diverse abilities). Provide a mix of offense, defense, control, and/or utility so the character feels complete in combat."
-    );
+    lines.push("Ability package: A Full Kit (4–5 diverse abilities).");
   }
 
   if (formatStyle === "stat-block") {
-    lines.push(
-      "Presentation preference: mechanics should read like a clear DnD 5e spell or feature — compact but structured and easy to scan."
-    );
+    lines.push("Presentation: DnD style compact stat block.");
   } else if (formatStyle === "minimal") {
-    lines.push(
-      "Presentation preference: very minimal quick reference. Keep descriptions tight and avoid long paragraphs."
-    );
+    lines.push("Presentation: Short minimal descriptions.");
   } else if (formatStyle === "cinematic") {
-    lines.push(
-      "Presentation preference: a bit more descriptive and cinematic, but still with clearly separated mechanics."
-    );
+    lines.push("Presentation: More cinematic/flavorful.");
   }
 
   lines.push(
     "Mechanics detail preference: " +
       (mechanicsDetail === "simple"
-        ? "Simple: include action type, range, saving throw (if any), basic damage, and 1–2 core effects."
-        : "Detailed: include action type, range, save, damage/scaling ideas, and any conditions or special rules.")
+        ? "Simple / lightweight mechanics."
+        : "Detailed mechanics including scaling and conditions.")
   );
 
   if (complexityLevel === "simple") {
-    lines.push(
-      "Complexity preference: Simple. Avoid multi-stage turns, stacking conditions, or tracking more than one resource or ongoing state per ability."
-    );
+    lines.push("Complexity preference: Simple, no multi-stage effects.");
   } else if (complexityLevel === "moderate") {
-    lines.push(
-      "Complexity preference: Moderate. You may include short-duration riders or simple conditions, but keep tracking light and easy to remember."
-    );
-  } else if (complexityLevel === "complex") {
-    lines.push(
-      "Complexity preference: Complex. You may include multi-stage effects, transformations, or lingering zones, but keep rules readable and avoid excessive bookkeeping."
-    );
+    lines.push("Complexity preference: Moderate tracking allowed.");
+  } else {
+    lines.push("Complexity preference: Complex / multi-stage is allowed.");
   }
 
-  lines.push("Preferred model: " + modelChoice + " (used by the backend, if available).");
-
+  lines.push("Preferred model: " + modelChoice);
   lines.push(
     "Preferred DC: " +
-      (preferredDc
-        ? preferredDc +
-          " (treat this as a target; you may adjust ±1–2 based on power level and effect, but stay near this unless you have a strong reason)."
-        : "No fixed DC specified; choose DCs appropriate for the power level rating below.")
+      (preferredDc || "Choose based on power level")
   );
 
   lines.push(
     "Desired power level (1–10): " +
       powerLevel +
-      " where 1 = trivial/weak and 10 = godlike, reality-warping with massive drawbacks. Damage, DCs, area, conditions, and drawbacks must clearly scale with this rating."
+      ". Higher power should increase DC, area, damage, impact, and drawback severity."
   );
 
   if (outputNotes) {
@@ -246,100 +205,63 @@ function buildPrompt() {
   lines.push("");
   lines.push("=== Power Level Mechanics Ladder (IMPORTANT) ===");
   lines.push(
-    "Use this ladder as your primary guide for DC, damage, area, effects, and drawbacks. Do not downgrade high power levels to feel 'balanced' — they can be broken on purpose if drawbacks are appropriate."
+    "Use this ladder to scale DC, damage, area, effects, and drawbacks."
   );
+  lines.push("1: DC 4–6...");
+  lines.push("2: DC 6–7...");
+  lines.push("3: DC 7–9...");
+  lines.push("4: DC 9–11...");
+  lines.push("5: DC 11–13...");
+  lines.push("6: DC 13–16...");
+  lines.push("7: DC 16–20...");
+  lines.push("8: DC 20–23...");
+  lines.push("9: DC 24–28...");
+  lines.push("10: DC 26–32...");
   lines.push("");
-  lines.push(
-    "1: DC 4–6. Very weak / trivial. 0–1 die or tiny effect. Mostly utility or soft flavor. No real drawback."
-  );
-  lines.push(
-    "2: DC 6–7. Very weak but noticeable. 1–2 dice or a light debuff. Small area or single target. No real drawback."
-  );
-  lines.push(
-    "3: DC 7–9. Weak but useful. 1–2 dice + minor rider or small control. Still feels like a low-impact trick."
-  );
-  lines.push(
-    "4: DC 9–11. Low-tier solid move. 2–3 dice, small area or moderate utility. Could be a secondary attack option."
-  );
-  lines.push(
-    "5: DC 11–13. Standard PC-level ability. 3–4 dice, clear and reliable effect. Good mainline combat option."
-  );
-  lines.push(
-    "6: DC 13–16. Strong PC / elite enemy move. 4–5 dice or strong control in a modest area. No or light drawback."
-  );
-  lines.push(
-    "7: DC 16–20. Boss-tier. 6–8 dice OR strong control in a decent area. Must include a meaningful drawback (HP cost, limited uses, self-debuff, etc.)."
-  );
-  lines.push(
-    "8: DC 20–23. Very high, near-mythic. 8–10+ dice OR large area with strong conditions (stun, restrain, banish) or powerful battlefield control. Serious drawback is required."
-  );
-  lines.push(
-    "9: DC 24–28. Mythic-level. May deal 100+ total damage across targets, combine multiple damage types and conditions, and create lasting hazards or terrain changes. Heavy drawback (HP or max HP cost, exhaustion, huge cooldown, chance of backfiring)."
-  );
-  lines.push(
-    "10: DC 26–32. Godlike, shonen finisher. Encounter- or arc-defining. Massive or arena-scale area, multiple stages of damage, multiple conditions and long-lasting or semi-permanent battlefield impact. Damage can be extremely high (hundreds), but there must be a massive drawback (severe HP drain, permanent scar, once-per-arc usage, risk of losing control, etc.)."
-  );
 
-  lines.push("");
   lines.push("=== Mechanics Requirements (IMPORTANT) ===");
-  lines.push(
-    "- Use a DnD 5e-like structure (actions/bonus actions, saves, ranges, damage dice) but do not overcomplicate rules."
-  );
-  lines.push(
-    "- Keep everything usable at the table: avoid walls of text, avoid complex tracking (no deep resource systems)."
-  );
-  lines.push("- Keep everything roughly at level 10–15 baseline, then scale intensity using the power ladder.");
-  lines.push(
-    "- Your #1 priority: mechanics (DC, damage, area, conditions, drawbacks) must visibly match the chosen power level."
-  );
-  lines.push(
-    "- For each ability, explicitly assign a mechanical role field (Offense, Defense, Support, Control, Utility, Finisher, or hybrid tags like Offense/Control)."
-  );
+  lines.push("- Must use clear DnD-like action economy.");
+  lines.push("- Keep effects readable (no paragraphs).");
+  lines.push("- Must match the power level.");
+  lines.push("- Must include a role tag for each ability.");
   lines.push("");
 
-  lines.push("=== Output JSON Format (VERY IMPORTANT) ===");
-  lines.push(
-    "Respond ONLY with valid JSON in this exact structure, with no extra text before or after:"
-  );
+  lines.push("=== Output JSON Format (REQUIRED) ===");
   lines.push(`
 {
   "abilities": [
     {
       "name": "Ability Name",
-      "role": "Offense, Defense, Support, Control, Utility, Finisher, etc.",
-      "summary": "One-line summary of what the ability does.",
-      "description": "Cinematic but concise description of how it looks and feels.",
-      "combo_logic": "Optional short explanation of how the fruits/powers interact (include this if requested).",
+      "role": "Offense / Defense / Support / Control / Utility / Finisher",
+      "summary": "1-line summary.",
+      "description": "Short cinematic description.",
+      "combo_logic": "Optional short explanation.",
       "mechanics": {
-        "action_type": "Action, Bonus Action, Reaction, etc.",
-        "range": "Range and area of effect.",
-        "target": "Who or what is affected.",
-        "save": "Saving throw type, if any (e.g. Dex save).",
-        "dc": "Typical DC or formula (e.g. 16 or 8 + proficiency + ability modifier).",
-        "damage": "Damage dice and type, if any.",
-        "effect": "Main mechanical effect(s) in 1–2 sentences."
+        "action_type": "",
+        "range": "",
+        "target": "",
+        "save": "",
+        "dc": "",
+        "damage": "",
+        "effect": ""
       }
     }
   ]
-}`);
-  lines.push(
-    "Make sure it is valid JSON. Do NOT include any commentary or Markdown, only the JSON object."
-  );
+}
+  `);
+  lines.push("Return ONLY valid JSON.");
 
   return lines.join("\n");
 }
 
-// Update the preview textarea
+// Update preview
 function updatePromptPreview() {
   const prompt = buildPrompt();
   const preview = document.getElementById("prompt-preview");
-  if (preview) {
-    preview.value = prompt;
-  }
+  if (preview) preview.value = prompt;
 }
 
-// --- Rendering ---
-
+// --- Rendering Abilities (cards + table) ---
 function renderCards(abilities, powerLevel) {
   const resultsBox = document.getElementById("results");
   if (!resultsBox) return;
@@ -361,22 +283,25 @@ function renderCards(abilities, powerLevel) {
     const tag = document.createElement("div");
     tag.className = "ability-card-tag";
     const roleText = ability.role ? String(ability.role) : "";
-    tag.textContent = describePowerLevel(powerLevel) + (roleText ? " · " + roleText : "");
+    tag.textContent =
+      describePowerLevel(powerLevel) + (roleText ? " · " + roleText : "");
 
     header.appendChild(title);
     header.appendChild(tag);
 
+    // Summary
     const summary = document.createElement("div");
     summary.className = "ability-card-summary";
     summary.textContent =
       ability.summary ||
       "No summary provided — consider adding a brief one-line explanation.";
 
+    // Description
     const description = document.createElement("div");
     description.className = "ability-card-description";
-    description.textContent =
-      ability.description || "No description provided.";
+    description.textContent = ability.description || "No description provided.";
 
+    // Mechanics
     const mech = ability.mechanics || {};
     const mechContainer = document.createElement("div");
     mechContainer.className = "ability-card-mech";
@@ -513,7 +438,6 @@ function renderAbilitiesView() {
 }
 
 // --- Copy helpers ---
-
 function formatAbilityText(ability, powerLevel) {
   const mech = ability.mechanics || {};
   const roleText = ability.role ? `Role: ${ability.role}\n` : "";
@@ -551,7 +475,6 @@ function copyAllAbilities() {
 }
 
 // --- Download stat sheet as .txt ---
-
 function downloadStatSheet() {
   const powerLevel =
     parseInt(document.getElementById("power-level").value, 10) || 6;
@@ -572,7 +495,6 @@ function downloadStatSheet() {
 }
 
 // --- Saved sets (localStorage databank) ---
-
 function loadSavedSetsFromStorage() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -587,9 +509,7 @@ function loadSavedSetsFromStorage() {
 function saveSetsToStorage(sets) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(sets));
-  } catch {
-    // ignore
-  }
+  } catch {}
 }
 
 function refreshSavedSetsDropdown() {
@@ -667,7 +587,6 @@ function handleDeleteSet() {
 }
 
 // --- Reroll a single ability ---
-
 async function rerollAbility(index) {
   if (!lastAbilities.length) return;
 
@@ -696,11 +615,11 @@ async function rerollAbility(index) {
   const statusText = document.getElementById("status-text");
   if (statusText) statusText.textContent = "Rerolling ability " + (index + 1) + "...";
 
-  // Make a copy so we can undo
   lastAbilitiesBeforeReroll = lastAbilities.map((a) => ({
     ...a,
     mechanics: { ...(a.mechanics || {}) }
   }));
+
   const undoBtn = document.getElementById("undo-reroll-btn");
   if (undoBtn) undoBtn.disabled = true;
 
@@ -725,7 +644,7 @@ async function rerollAbility(index) {
     try {
       parsed = JSON.parse(raw);
     } catch (e) {
-      console.warn("Failed to parse JSON on reroll; aborting reroll.", e);
+      console.warn("Failed to parse JSON on reroll.", e);
       return;
     }
 
@@ -784,126 +703,108 @@ function randomizeInputs() {
     "Tank",
     "Battlefield controller"
   ];
+
   const themes = [
-    "Flame-Flame Fruit (fire logia)",
-    "Sand-Sand Fruit (sand logia)",
-    "Ice-Ice Fruit (frozen logia)",
-    "Thunder-Thunder Fruit (storm logia)",
-    "Light-Light Fruit (radiant logia)",
-    "Dark-Dark Fruit (gravity darkness)",
-    "Magma-Magma Fruit (volcanic logia)",
-    "Smoke-Smoke Fruit (smoke logia)",
-    "Gas-Gas Fruit (toxic gas)",
-    "Snow-Snow Fruit (blizzard logia)",
-    "Earth-Earth Fruit (stone & quake)",
-    "Metal-Metal Fruit (living steel)",
-    "Glass-Glass Fruit (shards & mirrors)",
-    "Shadow-Shadow Fruit (dark silhouettes)",
-    "Soul-Soul Fruit (soul manipulation)",
-    "String-String Fruit (razor threads)",
-    "Gravity-Gravity Fruit (space crushing)",
-    "Time-Time Fruit (short rewinds)",
-    "Memory-Memory Fruit (steal & edit memories)",
-    "Copy-Copy Fruit (mimic devil fruits)",
-    "Reflection Fruit (counter and rebound attacks)",
-    "Echo-Echo Fruit (sound & vibration)",
-    "Storm-Storm Fruit (wind and rain control)",
-    "Forest-Forest Fruit (living trees & vines)",
-    "Bloom-Bloom Fruit (instant plant growth)",
-    "Beast-Beast Fruit: Ancient Dragon",
-    "Beast-Beast Fruit: Mythical Phoenix",
-    "Beast-Beast Fruit: Mythical Kirin",
-    "Beast-Beast Fruit: Ancient Mammoth",
-    "Beast-Beast Fruit: Ancient Tyrannosaur",
-    "Beast-Beast Fruit: Ancient Spinosaurus",
-    "Beast-Beast Fruit: Ancient Triceratops",
-    "Beast-Beast Fruit: Mythical Nine-Tailed Fox",
-    "Beast-Beast Fruit: Mythical Griffin",
-    "Beast-Beast Fruit: Mythical Sea Serpent",
-    "Zone-Zone Fruit: Shadow Panther",
-    "Zone-Zone Fruit: Thunder Wolf",
-    "Zone-Zone Fruit: Iron Rhino",
-    "Zone-Zone Fruit: Glass Serpent",
-    "Zone-Zone Fruit: Venom Spider",
-    "Puppet-Puppet Fruit (string-control bodies)",
-    "Forge-Forge Fruit (weapon creation)",
-    "Ink-Ink Fruit (living drawings)",
-    "Card-Card Fruit (summon from cards)",
-    "Portal-Portal Fruit (short-range portals)",
-    "Pocket-Pocket Fruit (spatial pockets)",
-    "Chain-Chain Fruit (binding chains)",
-    "Barrier-Barrier Fruit (forcefields)",
-    "Mirror-Mirror Fruit (clones & warps)",
-    "Blood-Blood Fruit (blood control)",
-    "Bone-Bone Fruit (harden & reshape bones)",
-    "Crystal-Crystal Fruit (piercing crystals)",
-    "Magnet-Magnet Fruit (metal manipulation)",
-    "Rust-Rust Fruit (decay metals)",
-    "Virus-Virus Fruit (status conditions)",
-    "Bloom-Blood Fruit (life-drain petals)",
-    "Star-Star Fruit (light spears & gravity wells)",
-    "Comet-Comet Fruit (impact meteors)",
-    "Tide-Tide Fruit (water pressure & waves)",
-    "Ink-Shadow Fruit (shadowy liquid forms)",
-    "Wire-Wire Fruit (razor wires & traps)",
-    "Dice-Dice Fruit (luck manipulation)",
-    "Fate-Fate Fruit (probability nudging)",
-    "Chain-Reaction Fruit (explosive tags & triggers)",
-    "Gear-Gear Fruit (mechanical augmentation)",
-    "Circuit-Circuit Fruit (bio-electric tech)",
-    "Plasma-Plasma Fruit (hyper-heated energy)",
-    "Mist-Mist Fruit (concealment & illusions)",
-    "Dream-Dream Fruit (dream constructs)",
-    "Nightmare Fruit (fear-based illusions)",
-    "Ward-Ward Fruit (seals & talismans)",
-    "Rune-Rune Fruit (sigils & glyphs)",
-    "Grave-Grave Fruit (bones & ghosts)",
-    "Soul-Forge Fruit (weaponized souls)",
-    "Chain-Soul Fruit (tethered spirits)",
-    "Mask-Mask Fruit (form & stat swapping)",
-    "Script-Script Fruit (rewrite rules of a scene)",
-    "Pulse-Pulse Fruit (shockwaves & heartbeats)",
-    "Lens-Lens Fruit (focus & amplify beams)",
-    "Orbit-Orbit Fruit (satellite projectiles)",
-    "Seed-Seed Fruit (explosive seeds)",
-    "Virus-Bloom Fruit (spreading debuff fields)",
-    "Steam-Steam Fruit (scalding pressure)",
-    "Graviton Fruit (localized black holes)",
-    "Circuit-Beast Fruit (cybernetic zoan)",
-    "Clock-Clock Fruit (slow/haste fields)",
-    "Fuse-Fuse Fruit (merge objects or bodies)",
-    "Copy-Beast Fruit (copy enemy zoans)",
-    "Shard-Shard Fruit (splitting self into shards)",
-    "Core-Core Fruit (anchor point body)",
-    "Shell-Shell Fruit (layered armor forms)",
-    "Page-Page Fruit (summon things from pages)",
-    "Chain-Sky Fruit (hook onto clouds & air)",
-    "Nebula-Nebula Fruit (gas and starlight)",
-    "Obsidian-Obsidian Fruit (glass-black blades)",
-    "Frost-Fire Fruit (cold + burn duality)",
-    "Thunder-Dragon Fruit (mythical zone)",
-    "Storm-Serpent Fruit (mythical sea dragon)",
-    "Solar-Solar Fruit (sun flares & heat)",
-    "Lunar-Lunar Fruit (gravity tides & illusions)",
-    "Pulse-Beast Fruit (beating heart monster form)",
-    "Blood-Forge Fruit (weapons from blood)",
-    "Ink-Beast Fruit (living ink beast form)",
-    "Magnet-Dragon Fruit (magnetic draconic form)",
-    "Chain-Flame Fruit (fiery chains)",
-    "Void-Void Fruit (erase space snippets)",
-    "Echo-Dragon Fruit (sound dragon roars)",
-    "Grave-Beast Fruit (undead beast form)",
-    "Galaxy-Galaxy Fruit (microcosm space control)",
-    "Toxin-Toxin Fruit (stacking poison debuffs)",
-    "Nectar-Nectar Fruit (healing & toxic honey)",
-    "Blossom-Dragon Fruit (floral dragon zone)",
-    "Storm-Gear Fruit (mechanical storm armor)",
-    "Solar-Beast Fruit (radiant beast zone)",
-    "Chimera-Chimera Fruit (multi-beast hybrid)",
-    "Rune-Beast Fruit (inscribed beast form)",
-    "Relic-Relic Fruit (ancient artifact body)",
-    "Circuit-Dragon Fruit (techno-dragon zone)",
-    "Quantum-Quantum Fruit (shift positions & states)"
+    "Red lightning",
+    "Sandstorm titan",
+    "Molten magma core",
+    "Crystalline ice beast",
+    "Soul lantern reaper",
+    "Shattered glass serpent",
+    "Temporal fracture",
+    "Vortex gravity spiral",
+    "Static tempest aura",
+    "Abyssal ink hydra",
+    "Thunder god's pulse",
+    "Spectral mirror shard",
+    "Iron cyclone",
+    "Void distortion field",
+    "Corrosion mist bloom",
+    "Solar flare bloom",
+    "Phantom chain ghostfire",
+    "Obsidian horn leviathan",
+    "Blood-forge titan",
+    "Echo rift avatar",
+    "Night-wisp swarm",
+    "Ember-scale phoenix",
+    "Blight bramble warden",
+    "Geomantic quake fist",
+    "Hollow puppet strings",
+    "Star-pulse beam",
+    "Frost-fang predator",
+    "Neon plasma shredder",
+    "Razor-tide shark spirit",
+    "Astral compression aura",
+    "Venom aurora spiral",
+    "Eclipse dragon shell",
+    "Living whirlpool core",
+    "Tidal geyser breaker",
+    "Toxic orchid bloom",
+    "Bio-circuit override",
+    "Marble golem heart",
+    "Steam locomotive beast",
+    "Wireframe spectra",
+    "Bone-forge architect",
+    "Demon-fruit mimicry",
+    "Dark-matter eruption",
+    "Solar halo dancer",
+    "Rotwood bloom titan",
+    "Star serpent conduit",
+    "Hurricane jet raptor",
+    "Fractured reality stitch",
+    "Shadow forge armor",
+    "Arc reactor pulse",
+    "Moonlit blade phantom",
+    "Polar aurora wolf",
+    "Verdant overgrowth tyrant",
+    "Oblivion wave channeler",
+    "Sand glass chronos",
+    "Storm-forge leviathan",
+    "Crystal bloom oracle",
+    "Electric railgun body",
+    "Volcanic iron hound",
+    "Dream-veil entity",
+    "Mist reaper harrow",
+    "Warped spatial coil",
+    "Spectral thunder bow",
+    "Particle blender core",
+    "Plasma fang tiger",
+    "Sun-flare knight",
+    "Marionette bloom husk",
+    "Prism breaker siege",
+    "Seismic knuckle beast",
+    "Flowing ink phantom",
+    "Shatter-pulse brute",
+    "Starborn reef golem",
+    "Rune-forge brawler",
+    "Ozone wing raptor",
+    "Dread-coil chimera",
+    "Sky-swallow dragon",
+    "Ferrite storm sentinel",
+    "Cosmic scream idol",
+    "Astral bloom artist",
+    "Fission lariat form",
+    "Photon burst striker",
+    "Ether-thread stalker",
+    "Revenant ember wolf",
+    "Bone-storm raider",
+    "Gale-glass striker",
+    "Fracture wraithling",
+    "Thunder lotus titan",
+    "Verdant swarm prowler",
+    "Nebula tendril wyrm",
+    "Blizzard armor shaman",
+    "Inferno-chisel avatar",
+    "Lightning spool runner",
+    "Anvil-spirit breaker",
+    "Warp-coil panther",
+    "Frost-flare chimera",
+    "Specter lantern tiger",
+    "Techno-pulse djinn",
+    "Magnetic storm shell",
+    "Soul-forge arbiter",
+    "Aerial cyclone caller",
+    "Hallowed mirror beast"
   ];
 
   const charRole = document.getElementById("char-role");
@@ -934,16 +835,14 @@ function randomizeInputs() {
     randomSample(styleInputs, randomInt(1, 3)).forEach((el) => (el.checked = true));
   }
 
-  // Combo focus (moderate+; now multi-select)
-  const comboInputs = Array.from(
-    document.querySelectorAll('input[name="comboFocus"]')
-  );
-  if (comboInputs.length && uiComplexityLevel >= 1) {
-    comboInputs.forEach((el) => (el.checked = false));
-    randomSample(comboInputs, randomInt(1, Math.min(2, comboInputs.length))).forEach(
-      (el) => (el.checked = true)
-    );
-  }
+  // Combo focus (multi-select)
+  const comboChecks = document.querySelectorAll('input[name="comboFocus"]');
+  comboChecks.forEach((el) => (el.checked = false));
+  const options = ["any", "single", "combo", "transformation", "awakening"];
+  const chosen = randomSample(options, randomInt(1, 3));
+  comboChecks.forEach((el) => {
+    if (chosen.includes(el.value)) el.checked = true;
+  });
 
   // Number of abilities + package type
   const numInput = document.getElementById("num-abilities");
@@ -969,7 +868,7 @@ function randomizeInputs() {
     styleSelect.value = randomChoice(opts);
   }
 
-  // Mechanics detail + ability complexity (moderate+)
+  // Mechanics detail + ability complexity
   const mechDetail = document.getElementById("mechanics-detail");
   const complexitySelect = document.getElementById("complexity-level");
   if (mechDetail && uiComplexityLevel >= 1) {
@@ -979,7 +878,7 @@ function randomizeInputs() {
     complexitySelect.value = randomChoice(["simple", "moderate", "complex"]);
   }
 
-  // Tone epic (moderate+)
+  // Tone epic
   const toneEpic = document.getElementById("tone-epic");
   if (toneEpic && uiComplexityLevel >= 1) {
     toneEpic.checked = true;
@@ -992,18 +891,14 @@ function randomizeInputs() {
     modelChoice.value = randomChoice(models);
   }
 
-  // Power level: we intentionally DO NOT randomize this.
-  // User can pick their desired power level and then hit Randomize.
-
   updatePromptPreview();
 }
 
-// --- Attach listeners once the DOM is ready ---
+// --- Attach listeners (DOM Ready) ---
 document.addEventListener("DOMContentLoaded", () => {
-  // Apply initial UI complexity
+  // Apply UI complexity
   applyUIComplexity();
 
-  // Complexity selector change
   const uiComplexSelect = document.getElementById("ui-complexity");
   if (uiComplexSelect) {
     uiComplexSelect.addEventListener("change", () => {
@@ -1012,23 +907,43 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Initial power label
+  // --- FIXED POWER LEVEL INPUT (mobile friendly) ---
   const powerInput = document.getElementById("power-level");
   const powerDisplay = document.getElementById("power-level-display");
+
   if (powerInput && powerDisplay) {
-    powerDisplay.textContent = describePowerLevel(powerInput.value);
-    powerInput.addEventListener("input", () => {
-      if (powerInput.value > 10) powerInput.value = 10;
-      if (powerInput.value < 1) powerInput.value = 1;
-      powerDisplay.textContent = describePowerLevel(powerInput.value);
+    const updatePowerUI = () => {
+      const raw = powerInput.value;
+
+      // Allow empty on mobile while typing
+      if (raw === "") {
+        powerDisplay.textContent = "Choose a power level (1–10)";
+        updatePromptPreview();
+        return;
+      }
+
+      let val = parseInt(raw, 10);
+      if (Number.isNaN(val)) return;
+
+      if (val > 10) val = 10;
+      if (val < 1) val = 1;
+
+      powerInput.value = String(val);
+      powerDisplay.textContent = describePowerLevel(val);
       updatePromptPreview();
-    });
+    };
+
+    // Initial display text
+    powerDisplay.textContent = describePowerLevel(powerInput.value || 6);
+
+    powerInput.addEventListener("input", updatePowerUI);
+    powerInput.addEventListener("change", updatePowerUI);
   }
 
-  // Initial prompt fill
+  // Initial prompt
   updatePromptPreview();
 
-  // Rebuild the prompt anytime an input changes
+  // Rebuild prompt on input changes
   const inputs = document.querySelectorAll("input, textarea, select");
   inputs.forEach((el) => {
     el.addEventListener("input", updatePromptPreview);
@@ -1053,7 +968,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Export / copy buttons
+  // Buttons
   const copyAllBtn = document.getElementById("copy-all-btn");
   if (copyAllBtn) {
     copyAllBtn.addEventListener("click", copyAllAbilities);
@@ -1069,35 +984,23 @@ document.addEventListener("DOMContentLoaded", () => {
     printBtn.addEventListener("click", () => window.print());
   }
 
-  // Undo reroll
   const undoBtn = document.getElementById("undo-reroll-btn");
-  if (undoBtn) {
-    undoBtn.addEventListener("click", undoLastReroll);
-  }
+  if (undoBtn) undoBtn.addEventListener("click", undoLastReroll);
 
-  // Randomize button
   const randomizeBtn = document.getElementById("randomize-btn");
-  if (randomizeBtn) {
-    randomizeBtn.addEventListener("click", randomizeInputs);
-  }
+  if (randomizeBtn) randomizeBtn.addEventListener("click", randomizeInputs);
 
   // Saved sets
   refreshSavedSetsDropdown();
 
   const saveSetBtn = document.getElementById("save-set-btn");
-  if (saveSetBtn) {
-    saveSetBtn.addEventListener("click", handleSaveSet);
-  }
+  if (saveSetBtn) saveSetBtn.addEventListener("click", handleSaveSet);
 
   const loadSetSelect = document.getElementById("load-set-select");
-  if (loadSetSelect) {
-    loadSetSelect.addEventListener("change", handleLoadSet);
-  }
+  if (loadSetSelect) loadSetSelect.addEventListener("change", handleLoadSet);
 
   const deleteSetBtn = document.getElementById("delete-set-btn");
-  if (deleteSetBtn) {
-    deleteSetBtn.addEventListener("click", handleDeleteSet);
-  }
+  if (deleteSetBtn) deleteSetBtn.addEventListener("click", handleDeleteSet);
 
   // Generate button
   const generateBtn = document.getElementById("generate-btn");
@@ -1145,7 +1048,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         parsed = JSON.parse(raw);
       } catch (e) {
-        console.warn("Failed to parse JSON abilities, falling back to raw text.", e);
+        console.warn("Failed to parse JSON abilities.", e);
       }
 
       if (parsed && Array.isArray(parsed.abilities)) {
@@ -1167,7 +1070,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (resultsBox2) {
         resultsBox2.classList.remove("ability-grid");
         resultsBox2.textContent =
-          "Error from API: " + (err && err.message ? err.message : "Unknown error");
+          "Error from API: " +
+          (err && err.message ? err.message : "Unknown error");
       }
     }
   });
