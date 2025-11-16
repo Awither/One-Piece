@@ -2,6 +2,7 @@
 let lastAbilities = [];
 let lastModel = "gpt-4.1-mini";
 let viewMode = "cards";
+let lastAbilitiesBeforeReroll = null;
 
 const STORAGE_KEY = "df_ability_sets_v1";
 
@@ -47,12 +48,19 @@ function buildPrompt() {
     parseInt(document.getElementById("num-abilities").value, 10) || 3;
   const formatStyle = document.getElementById("format-style").value;
   const mechanicsDetail = document.getElementById("mechanics-detail").value;
+  const complexityLevel = document.getElementById("complexity-level").value;
+  const abilityPackage = document.getElementById("ability-package").value;
   const toneEpic = document.getElementById("tone-epic").checked;
   const outputNotes = document.getElementById("output-notes").value.trim();
   const modelChoice = document.getElementById("model-choice").value;
   const preferredDc = document.getElementById("preferred-dc").value.trim();
   const powerLevel =
     parseInt(document.getElementById("power-level").value, 10) || 6;
+
+  const comboFocus = document.getElementById("combo-focus").value;
+  const includeComboExplanation = document.getElementById(
+    "include-combo-explanation"
+  ).checked;
 
   const lines = [];
 
@@ -98,12 +106,60 @@ function buildPrompt() {
   }
   lines.push("");
 
+  lines.push("=== Combo Focus ===");
+  if (comboFocus === "single") {
+    lines.push(
+      "Combo style: Single-fruit techniques. Abilities should feel like advanced or awakened uses of one core fruit."
+    );
+  } else if (comboFocus === "combo") {
+    lines.push(
+      "Combo style: Multi-fruit combo techniques. Abilities should clearly showcase how multiple fruits or power sources interact in one move."
+    );
+  } else if (comboFocus === "transformation") {
+    lines.push(
+      "Combo style: Transformation mode (Zoan / hybrid). Abilities should emphasize form changes, physicality, and powers expressed through that form."
+    );
+  } else if (comboFocus === "awakening") {
+    lines.push(
+      "Combo style: Environmental awakening. Abilities should reshape terrain, environment, and battlefield space using the fruit powers."
+    );
+  } else {
+    lines.push(
+      "Combo style: Any combination style that feels thematically cool and appropriate for the chosen fruits."
+    );
+  }
+  if (includeComboExplanation) {
+    lines.push(
+      "For each ability, include a short 'combo_logic' note in the JSON explaining how the fruits/powers interact mechanically and visually."
+    );
+  }
+  lines.push("");
+
   lines.push("=== Output Style Preferences ===");
   lines.push(
     "Number of abilities: " +
       numAbilities +
-      ". Each ability MUST include: (1) Ability Name, (2) Summary, (3) Cinematic Description, (4) Simple DnD mechanics."
+      ". Each ability MUST include: (1) Ability Name, (2) Role, (3) Summary, (4) Cinematic Description, (5) Simple DnD mechanics."
   );
+
+  // Ability package description
+  if (abilityPackage === "signature") {
+    lines.push(
+      "Ability package: 3 Signature Moves. Design a small set of iconic abilities that represent this character’s style. Try to cover different roles (offense, defense, mobility, etc.) where appropriate."
+    );
+  } else if (abilityPackage === "finisher") {
+    lines.push(
+      "Ability package: 1 Ultimate Finisher. Focus on a single, extremely memorable, high-impact move that can end or define an encounter, with a major drawback."
+    );
+  } else if (abilityPackage === "defense-mobility") {
+    lines.push(
+      "Ability package: 1 Defensive Reaction + 1 Mobility Tool. One ability should be clearly defensive or reactive; the other should help reposition, escape, or engage."
+    );
+  } else if (abilityPackage === "full-kit") {
+    lines.push(
+      "Ability package: A Full Kit (4–5 diverse abilities). Provide a mix of offense, defense, control, and/or utility so the character feels complete in combat."
+    );
+  }
 
   if (formatStyle === "stat-block") {
     lines.push(
@@ -125,6 +181,20 @@ function buildPrompt() {
         ? "Simple: include action type, range, saving throw (if any), basic damage, and 1–2 core effects."
         : "Detailed: include action type, range, save, damage/scaling ideas, and any conditions or special rules.")
   );
+
+  if (complexityLevel === "simple") {
+    lines.push(
+      "Complexity preference: Simple. Avoid multi-stage turns, stacking conditions, or tracking more than one resource or ongoing state per ability."
+    );
+  } else if (complexityLevel === "moderate") {
+    lines.push(
+      "Complexity preference: Moderate. You may include short-duration riders or simple conditions, but keep tracking light and easy to remember."
+    );
+  } else if (complexityLevel === "complex") {
+    lines.push(
+      "Complexity preference: Complex. You may include multi-stage effects, transformations, or lingering zones, but keep rules readable and avoid excessive bookkeeping."
+    );
+  }
 
   lines.push("Preferred model: " + modelChoice + " (used by the backend, if available).");
 
@@ -195,6 +265,9 @@ function buildPrompt() {
   lines.push(
     "- Your #1 priority: mechanics (DC, damage, area, conditions, drawbacks) must visibly match the chosen power level."
   );
+  lines.push(
+    "- For each ability, explicitly assign a mechanical role field (Offense, Defense, Support, Control, Utility, Finisher, or hybrid tags like Offense/Control)."
+  );
   lines.push("");
 
   lines.push("=== Output JSON Format (VERY IMPORTANT) ===");
@@ -206,8 +279,10 @@ function buildPrompt() {
   "abilities": [
     {
       "name": "Ability Name",
+      "role": "Offense, Defense, Support, Control, Utility, Finisher, etc.",
       "summary": "One-line summary of what the ability does.",
       "description": "Cinematic but concise description of how it looks and feels.",
+      "combo_logic": "Optional short explanation of how the fruits/powers interact (include this if requested).",
       "mechanics": {
         "action_type": "Action, Bonus Action, Reaction, etc.",
         "range": "Range and area of effect.",
@@ -258,7 +333,8 @@ function renderCards(abilities, powerLevel) {
 
     const tag = document.createElement("div");
     tag.className = "ability-card-tag";
-    tag.textContent = describePowerLevel(powerLevel);
+    const roleText = ability.role ? String(ability.role) : "";
+    tag.textContent = describePowerLevel(powerLevel) + (roleText ? " · " + roleText : "");
 
     header.appendChild(title);
     header.appendChild(tag);
@@ -303,26 +379,42 @@ function renderCards(abilities, powerLevel) {
     addMechItem("Damage", mech.damage);
     addMechItem("Effect", mech.effect);
 
+    if (ability.combo_logic) {
+      const comboLogic = document.createElement("div");
+      comboLogic.className = "ability-card-combo-logic";
+      comboLogic.textContent = "Combo logic: " + ability.combo_logic;
+      card.appendChild(header);
+      card.appendChild(summary);
+      card.appendChild(description);
+      card.appendChild(mechContainer);
+      card.appendChild(comboLogic);
+    } else {
+      card.appendChild(header);
+      card.appendChild(summary);
+      card.appendChild(description);
+      card.appendChild(mechContainer);
+    }
+
     const actions = document.createElement("div");
     actions.className = "ability-card-actions";
 
     const copyBtn = document.createElement("button");
     copyBtn.className = "chip small";
     copyBtn.textContent = "Copy";
-    copyBtn.addEventListener("click", () => copySingleAbility(ability, powerLevel));
+    copyBtn.addEventListener("click", () =>
+      copySingleAbility(ability, powerLevel)
+    );
 
     const rerollBtn = document.createElement("button");
     rerollBtn.className = "chip small";
     rerollBtn.textContent = "Reroll";
+    rerollBtn.title =
+      "Reroll = new ability with the same inputs & power level, but a different idea.";
     rerollBtn.addEventListener("click", () => rerollAbility(index));
 
     actions.appendChild(copyBtn);
     actions.appendChild(rerollBtn);
 
-    card.appendChild(header);
-    card.appendChild(summary);
-    card.appendChild(description);
-    card.appendChild(mechContainer);
     card.appendChild(actions);
 
     resultsBox.appendChild(card);
@@ -341,7 +433,7 @@ function renderTable(abilities, powerLevel) {
 
   const thead = document.createElement("thead");
   const headerRow = document.createElement("tr");
-  ["Name", "Power", "Action", "Range", "DC", "Damage", "Effect"].forEach((h) => {
+  ["Name", "Power", "Role", "Action", "Range", "DC", "Damage", "Effect"].forEach((h) => {
     const th = document.createElement("th");
     th.textContent = h;
     headerRow.appendChild(th);
@@ -361,11 +453,12 @@ function renderTable(abilities, powerLevel) {
 
     addCell(ability.name || "");
     addCell(describePowerLevel(powerLevel));
+    addCell(ability.role || "");
     addCell(mech.action_type || "");
     addCell(mech.range || "");
     addCell(mech.dc || "");
     addCell(mech.damage || "");
-    addCell(mech.effect || mech.summary || "");
+    addCell(mech.effect || ability.summary || "");
 
     tbody.appendChild(row);
   });
@@ -400,8 +493,13 @@ function renderAbilitiesView() {
 
 function formatAbilityText(ability, powerLevel) {
   const mech = ability.mechanics || {};
+  const roleText = ability.role ? `Role: ${ability.role}\n` : "";
+  const comboText = ability.combo_logic ? `Combo logic: ${ability.combo_logic}\n` : "";
   return (
-    `[${ability.name || "Unnamed Ability"}] – ${describePowerLevel(powerLevel)}\n` +
+    `[${ability.name || "Unnamed Ability"}] – ${describePowerLevel(
+      powerLevel
+    )}\n` +
+    roleText +
     `Action: ${mech.action_type || "-"} | Range: ${mech.range || "-"} | Target: ${
       mech.target || "-"
     }\n` +
@@ -409,6 +507,7 @@ function formatAbilityText(ability, powerLevel) {
       mech.damage || "-"
     }\n` +
     `Effect: ${mech.effect || "-"}\n` +
+    comboText +
     (ability.description ? `Description: ${ability.description}\n` : "")
   );
 }
@@ -574,6 +673,14 @@ async function rerollAbility(index) {
   const statusText = document.getElementById("status-text");
   if (statusText) statusText.textContent = "Rerolling ability " + (index + 1) + "...";
 
+  // Make a deep-ish copy so we can undo
+  lastAbilitiesBeforeReroll = lastAbilities.map((a) => ({
+    ...a,
+    mechanics: { ...(a.mechanics || {}) }
+  }));
+  const undoBtn = document.getElementById("undo-reroll-btn");
+  if (undoBtn) undoBtn.disabled = true;
+
   try {
     const res = await fetch("/api/generate", {
       method: "POST",
@@ -603,6 +710,7 @@ async function rerollAbility(index) {
       lastAbilities[index] = parsed.abilities[0];
       renderAbilitiesView();
       if (statusText) statusText.textContent = "Done.";
+      if (undoBtn) undoBtn.disabled = false;
     }
   } catch (err) {
     console.error(err);
@@ -611,6 +719,16 @@ async function rerollAbility(index) {
         "Error on reroll: " + (err && err.message ? err.message : "Unknown error");
     }
   }
+}
+
+// --- Undo last reroll ---
+function undoLastReroll() {
+  if (!lastAbilitiesBeforeReroll) return;
+  lastAbilities = lastAbilitiesBeforeReroll;
+  lastAbilitiesBeforeReroll = null;
+  const undoBtn = document.getElementById("undo-reroll-btn");
+  if (undoBtn) undoBtn.disabled = true;
+  renderAbilitiesView();
 }
 
 // --- Attach listeners once the DOM is ready ---
@@ -672,6 +790,12 @@ document.addEventListener("DOMContentLoaded", () => {
     printBtn.addEventListener("click", () => window.print());
   }
 
+  // Undo reroll
+  const undoBtn = document.getElementById("undo-reroll-btn");
+  if (undoBtn) {
+    undoBtn.addEventListener("click", undoLastReroll);
+  }
+
   // Saved sets
   refreshSavedSetsDropdown();
 
@@ -710,6 +834,10 @@ document.addEventListener("DOMContentLoaded", () => {
       resultsBox.classList.remove("ability-grid");
       resultsBox.textContent = "";
     }
+
+    lastAbilitiesBeforeReroll = null;
+    const undoBtnInner = document.getElementById("undo-reroll-btn");
+    if (undoBtnInner) undoBtnInner.disabled = true;
 
     try {
       const res = await fetch("/api/generate", {
