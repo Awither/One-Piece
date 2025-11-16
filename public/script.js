@@ -3,6 +3,7 @@ let lastAbilities = [];
 let lastModel = "gpt-4.1-mini";
 let viewMode = "cards";
 let lastAbilitiesBeforeReroll = null;
+let uiComplexityLevel = 1; // 0 = basic, 1 = moderate, 2 = complex
 
 const STORAGE_KEY = "df_ability_sets_v1";
 
@@ -28,6 +29,19 @@ function describePowerLevel(n) {
   return "10 – Godlike, reality-warping with massive drawback";
 }
 
+// --- UI complexity (Basic / Moderate / Complex) ---
+function applyUIComplexity() {
+  const select = document.getElementById("ui-complexity");
+  const val = select ? select.value : "moderate";
+  const map = { basic: 0, moderate: 1, complex: 2 };
+  uiComplexityLevel = map[val] ?? 1;
+
+  document.querySelectorAll("[data-ui-min]").forEach((el) => {
+    const required = parseInt(el.dataset.uiMin, 10) || 0;
+    el.style.display = uiComplexityLevel >= required ? "" : "none";
+  });
+}
+
 // --- Build the prompt text from all inputs ---
 function buildPrompt() {
   const charName = document.getElementById("char-name").value.trim();
@@ -36,31 +50,34 @@ function buildPrompt() {
   const charBackstory = document.getElementById("char-backstory").value.trim();
 
   const effectTypes = getCheckedValues("effectTypes");
-  const effectNotes = document.getElementById("effect-notes").value.trim();
+  const effectNotes = document.getElementById("effect-notes")?.value.trim() || "";
 
   const fruitTraits = getCheckedValues("fruitTraits");
-  const fruitNotes = document.getElementById("fruit-notes").value.trim();
+  const fruitNotes = document.getElementById("fruit-notes")?.value.trim() || "";
 
   const styleMods = getCheckedValues("styleMods");
-  const styleNotes = document.getElementById("style-notes").value.trim();
+  const styleNotes = document.getElementById("style-notes")?.value.trim() || "";
 
   const numAbilities =
     parseInt(document.getElementById("num-abilities").value, 10) || 3;
-  const formatStyle = document.getElementById("format-style").value;
-  const mechanicsDetail = document.getElementById("mechanics-detail").value;
-  const complexityLevel = document.getElementById("complexity-level").value;
-  const abilityPackage = document.getElementById("ability-package").value;
-  const toneEpic = document.getElementById("tone-epic").checked;
-  const outputNotes = document.getElementById("output-notes").value.trim();
-  const modelChoice = document.getElementById("model-choice").value;
-  const preferredDc = document.getElementById("preferred-dc").value.trim();
+  const formatStyle = document.getElementById("format-style")?.value || "stat-block";
+  const mechanicsDetail =
+    document.getElementById("mechanics-detail")?.value || "simple";
+  const complexityLevel =
+    document.getElementById("complexity-level")?.value || "moderate";
+  const abilityPackage =
+    document.getElementById("ability-package")?.value || "signature";
+  const toneEpic = document.getElementById("tone-epic")?.checked ?? true;
+  const outputNotes = document.getElementById("output-notes")?.value.trim() || "";
+  const modelChoice = document.getElementById("model-choice")?.value || "gpt-4.1-mini";
+  const preferredDc = document.getElementById("preferred-dc")?.value.trim() || "";
   const powerLevel =
     parseInt(document.getElementById("power-level").value, 10) || 6;
 
-  const comboFocus = document.getElementById("combo-focus").value;
+  const comboFocus = document.getElementById("combo-focus")?.value || "any";
   const includeComboExplanation = document.getElementById(
     "include-combo-explanation"
-  ).checked;
+  )?.checked;
 
   const lines = [];
 
@@ -379,20 +396,16 @@ function renderCards(abilities, powerLevel) {
     addMechItem("Damage", mech.damage);
     addMechItem("Effect", mech.effect);
 
+    card.appendChild(header);
+    card.appendChild(summary);
+    card.appendChild(description);
+    card.appendChild(mechContainer);
+
     if (ability.combo_logic) {
       const comboLogic = document.createElement("div");
       comboLogic.className = "ability-card-combo-logic";
       comboLogic.textContent = "Combo logic: " + ability.combo_logic;
-      card.appendChild(header);
-      card.appendChild(summary);
-      card.appendChild(description);
-      card.appendChild(mechContainer);
       card.appendChild(comboLogic);
-    } else {
-      card.appendChild(header);
-      card.appendChild(summary);
-      card.appendChild(description);
-      card.appendChild(mechContainer);
     }
 
     const actions = document.createElement("div");
@@ -673,7 +686,7 @@ async function rerollAbility(index) {
   const statusText = document.getElementById("status-text");
   if (statusText) statusText.textContent = "Rerolling ability " + (index + 1) + "...";
 
-  // Make a deep-ish copy so we can undo
+  // Make a copy so we can undo
   lastAbilitiesBeforeReroll = lastAbilities.map((a) => ({
     ...a,
     mechanics: { ...(a.mechanics || {}) }
@@ -731,8 +744,148 @@ function undoLastReroll() {
   renderAbilitiesView();
 }
 
+// --- Randomizer helpers ---
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randomChoice(array) {
+  return array[randomInt(0, array.length - 1)];
+}
+
+function randomSample(array, count) {
+  const copy = [...array];
+  const out = [];
+  const n = Math.min(count, copy.length);
+  for (let i = 0; i < n; i++) {
+    const idx = randomInt(0, copy.length - 1);
+    out.push(copy.splice(idx, 1)[0]);
+  }
+  return out;
+}
+
+function randomizeInputs() {
+  // optional: simple random theme/role
+  const roles = [
+    "Frontline bruiser",
+    "Sniper",
+    "Support caster",
+    "Agile skirmisher",
+    "Tank",
+    "Battlefield controller"
+  ];
+  const themes = [
+    "Red lightning",
+    "Sand and glass",
+    "Gravity wells",
+    "Soul flames",
+    "Storm and thunder",
+    "Ice and metal",
+    "Shadow and fog"
+  ];
+
+  const charRole = document.getElementById("char-role");
+  const charTheme = document.getElementById("char-theme");
+  if (charRole) charRole.value = randomChoice(roles);
+  if (charTheme) charTheme.value = randomChoice(themes);
+
+  // Effect types
+  const effectInputs = Array.from(
+    document.querySelectorAll('input[name="effectTypes"]')
+  );
+  effectInputs.forEach((el) => (el.checked = false));
+  randomSample(effectInputs, randomInt(1, 3)).forEach((el) => (el.checked = true));
+
+  // Fruit traits
+  const fruitInputs = Array.from(
+    document.querySelectorAll('input[name="fruitTraits"]')
+  );
+  fruitInputs.forEach((el) => (el.checked = false));
+  randomSample(fruitInputs, randomInt(1, 3)).forEach((el) => (el.checked = true));
+
+  // Style mods (only if moderate+)
+  if (uiComplexityLevel >= 1) {
+    const styleInputs = Array.from(
+      document.querySelectorAll('input[name="styleMods"]')
+    );
+    styleInputs.forEach((el) => (el.checked = false));
+    randomSample(styleInputs, randomInt(1, 3)).forEach((el) => (el.checked = true));
+  }
+
+  // Combo focus (moderate+)
+  const comboSelect = document.getElementById("combo-focus");
+  if (comboSelect && uiComplexityLevel >= 1) {
+    const options = ["any", "single", "combo", "transformation", "awakening"];
+    comboSelect.value = randomChoice(options);
+  }
+
+  // Number of abilities + package type
+  const numInput = document.getElementById("num-abilities");
+  const packageSelect = document.getElementById("ability-package");
+  if (numInput && packageSelect) {
+    const packages = ["signature", "finisher", "defense-mobility", "full-kit"];
+    const pkg = randomChoice(packages);
+    packageSelect.value = pkg;
+
+    let n = 3;
+    if (pkg === "finisher") n = 1;
+    else if (pkg === "defense-mobility") n = 2;
+    else if (pkg === "full-kit") n = randomInt(4, 5);
+    else n = randomInt(2, 4);
+
+    numInput.value = n;
+  }
+
+  // Output style (moderate+)
+  const styleSelect = document.getElementById("format-style");
+  if (styleSelect && uiComplexityLevel >= 1) {
+    const opts = ["stat-block", "minimal", "cinematic"];
+    styleSelect.value = randomChoice(opts);
+  }
+
+  // Mechanics detail + ability complexity (moderate+)
+  const mechDetail = document.getElementById("mechanics-detail");
+  const complexitySelect = document.getElementById("complexity-level");
+  if (mechDetail && uiComplexityLevel >= 1) {
+    mechDetail.value = randomChoice(["simple", "detailed"]);
+  }
+  if (complexitySelect && uiComplexityLevel >= 1) {
+    complexitySelect.value = randomChoice(["simple", "moderate", "complex"]);
+  }
+
+  // Tone epic (moderate+)
+  const toneEpic = document.getElementById("tone-epic");
+  if (toneEpic && uiComplexityLevel >= 1) {
+    toneEpic.checked = true;
+  }
+
+  // Model choice (complex only)
+  const modelChoice = document.getElementById("model-choice");
+  if (modelChoice && uiComplexityLevel >= 2) {
+    const models = ["gpt-4.1-mini", "gpt-4.1", "gpt-5.1"];
+    modelChoice.value = randomChoice(models);
+  }
+
+  // Power level: we intentionally DO NOT randomize this.
+  // User can pick their desired power level and then hit Randomize.
+
+  updatePromptPreview();
+}
+
 // --- Attach listeners once the DOM is ready ---
 document.addEventListener("DOMContentLoaded", () => {
+  // Apply initial UI complexity
+  applyUIComplexity();
+
+  // Complexity selector change
+  const uiComplexSelect = document.getElementById("ui-complexity");
+  if (uiComplexSelect) {
+    uiComplexSelect.addEventListener("change", () => {
+      applyUIComplexity();
+      updatePromptPreview();
+    });
+  }
+
   // Initial power label
   const powerInput = document.getElementById("power-level");
   const powerDisplay = document.getElementById("power-level-display");
@@ -796,6 +949,12 @@ document.addEventListener("DOMContentLoaded", () => {
     undoBtn.addEventListener("click", undoLastReroll);
   }
 
+  // Randomize button
+  const randomizeBtn = document.getElementById("randomize-btn");
+  if (randomizeBtn) {
+    randomizeBtn.addEventListener("click", randomizeInputs);
+  }
+
   // Saved sets
   refreshSavedSetsDropdown();
 
@@ -824,7 +983,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const prompt = buildPrompt();
     document.getElementById("prompt-preview").value = prompt;
 
-    const modelChoice = document.getElementById("model-choice").value || "gpt-4.1-mini";
+    const modelChoice = document.getElementById("model-choice")?.value || "gpt-4.1-mini";
     lastModel = modelChoice;
 
     if (statusText) statusText.textContent = "Generating abilities...";
