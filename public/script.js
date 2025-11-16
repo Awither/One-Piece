@@ -74,7 +74,7 @@ function buildPrompt() {
   const powerLevel =
     parseInt(document.getElementById("power-level").value, 10) || 6;
 
-  const comboFocus = document.getElementById("combo-focus")?.value || "any";
+  const comboFocusValues = getCheckedValues("comboFocus");
   const includeComboExplanation = document.getElementById(
     "include-combo-explanation"
   )?.checked;
@@ -90,7 +90,7 @@ function buildPrompt() {
   lines.push("=== Character Context ===");
   lines.push(`Name: ${charName || "Unnamed PC"}`);
   if (charRole) lines.push(`Combat Role: ${charRole}`);
-  if (charTheme) lines.push(`Theme / Vibe: ${charTheme}`);
+  if (charTheme) lines.push(`Theme / Vibe / Devil Fruit: ${charTheme}`);
   if (charBackstory) lines.push(`Backstory / Notes: ${charBackstory}`);
   lines.push("");
 
@@ -124,26 +124,36 @@ function buildPrompt() {
   lines.push("");
 
   lines.push("=== Combo Focus ===");
-  if (comboFocus === "single") {
-    lines.push(
-      "Combo style: Single-fruit techniques. Abilities should feel like advanced or awakened uses of one core fruit."
-    );
-  } else if (comboFocus === "combo") {
-    lines.push(
-      "Combo style: Multi-fruit combo techniques. Abilities should clearly showcase how multiple fruits or power sources interact in one move."
-    );
-  } else if (comboFocus === "transformation") {
-    lines.push(
-      "Combo style: Transformation mode (Zoan / hybrid). Abilities should emphasize form changes, physicality, and powers expressed through that form."
-    );
-  } else if (comboFocus === "awakening") {
-    lines.push(
-      "Combo style: Environmental awakening. Abilities should reshape terrain, environment, and battlefield space using the fruit powers."
-    );
-  } else {
+  if (!comboFocusValues.length) {
     lines.push(
       "Combo style: Any combination style that feels thematically cool and appropriate for the chosen fruits."
     );
+  } else {
+    lines.push(
+      "Combo styles to emphasize: " + comboFocusValues.join(", ") + "."
+    );
+    const comboDescriptions = [];
+    if (comboFocusValues.includes("single")) {
+      comboDescriptions.push(
+        "Single-fruit techniques should feel like advanced or awakened uses of one core fruit."
+      );
+    }
+    if (comboFocusValues.includes("combo")) {
+      comboDescriptions.push(
+        "Multi-fruit combo techniques should clearly showcase how multiple fruits or power sources interact in one move."
+      );
+    }
+    if (comboFocusValues.includes("transformation")) {
+      comboDescriptions.push(
+        "Transformation mode should emphasize Zoan / hybrid forms, physicality, and powers expressed through that form."
+      );
+    }
+    if (comboFocusValues.includes("awakening")) {
+      comboDescriptions.push(
+        "Environmental awakening should reshape terrain, environment, and battlefield space using the fruit powers."
+      );
+    }
+    comboDescriptions.forEach((l) => lines.push(l));
   }
   if (includeComboExplanation) {
     lines.push(
@@ -775,13 +785,125 @@ function randomizeInputs() {
     "Battlefield controller"
   ];
   const themes = [
-    "Red lightning",
-    "Sand and glass",
-    "Gravity wells",
-    "Soul flames",
-    "Storm and thunder",
-    "Ice and metal",
-    "Shadow and fog"
+    "Flame-Flame Fruit (fire logia)",
+    "Sand-Sand Fruit (sand logia)",
+    "Ice-Ice Fruit (frozen logia)",
+    "Thunder-Thunder Fruit (storm logia)",
+    "Light-Light Fruit (radiant logia)",
+    "Dark-Dark Fruit (gravity darkness)",
+    "Magma-Magma Fruit (volcanic logia)",
+    "Smoke-Smoke Fruit (smoke logia)",
+    "Gas-Gas Fruit (toxic gas)",
+    "Snow-Snow Fruit (blizzard logia)",
+    "Earth-Earth Fruit (stone & quake)",
+    "Metal-Metal Fruit (living steel)",
+    "Glass-Glass Fruit (shards & mirrors)",
+    "Shadow-Shadow Fruit (dark silhouettes)",
+    "Soul-Soul Fruit (soul manipulation)",
+    "String-String Fruit (razor threads)",
+    "Gravity-Gravity Fruit (space crushing)",
+    "Time-Time Fruit (short rewinds)",
+    "Memory-Memory Fruit (steal & edit memories)",
+    "Copy-Copy Fruit (mimic devil fruits)",
+    "Reflection Fruit (counter and rebound attacks)",
+    "Echo-Echo Fruit (sound & vibration)",
+    "Storm-Storm Fruit (wind and rain control)",
+    "Forest-Forest Fruit (living trees & vines)",
+    "Bloom-Bloom Fruit (instant plant growth)",
+    "Beast-Beast Fruit: Ancient Dragon",
+    "Beast-Beast Fruit: Mythical Phoenix",
+    "Beast-Beast Fruit: Mythical Kirin",
+    "Beast-Beast Fruit: Ancient Mammoth",
+    "Beast-Beast Fruit: Ancient Tyrannosaur",
+    "Beast-Beast Fruit: Ancient Spinosaurus",
+    "Beast-Beast Fruit: Ancient Triceratops",
+    "Beast-Beast Fruit: Mythical Nine-Tailed Fox",
+    "Beast-Beast Fruit: Mythical Griffin",
+    "Beast-Beast Fruit: Mythical Sea Serpent",
+    "Zone-Zone Fruit: Shadow Panther",
+    "Zone-Zone Fruit: Thunder Wolf",
+    "Zone-Zone Fruit: Iron Rhino",
+    "Zone-Zone Fruit: Glass Serpent",
+    "Zone-Zone Fruit: Venom Spider",
+    "Puppet-Puppet Fruit (string-control bodies)",
+    "Forge-Forge Fruit (weapon creation)",
+    "Ink-Ink Fruit (living drawings)",
+    "Card-Card Fruit (summon from cards)",
+    "Portal-Portal Fruit (short-range portals)",
+    "Pocket-Pocket Fruit (spatial pockets)",
+    "Chain-Chain Fruit (binding chains)",
+    "Barrier-Barrier Fruit (forcefields)",
+    "Mirror-Mirror Fruit (clones & warps)",
+    "Blood-Blood Fruit (blood control)",
+    "Bone-Bone Fruit (harden & reshape bones)",
+    "Crystal-Crystal Fruit (piercing crystals)",
+    "Magnet-Magnet Fruit (metal manipulation)",
+    "Rust-Rust Fruit (decay metals)",
+    "Virus-Virus Fruit (status conditions)",
+    "Bloom-Blood Fruit (life-drain petals)",
+    "Star-Star Fruit (light spears & gravity wells)",
+    "Comet-Comet Fruit (impact meteors)",
+    "Tide-Tide Fruit (water pressure & waves)",
+    "Ink-Shadow Fruit (shadowy liquid forms)",
+    "Wire-Wire Fruit (razor wires & traps)",
+    "Dice-Dice Fruit (luck manipulation)",
+    "Fate-Fate Fruit (probability nudging)",
+    "Chain-Reaction Fruit (explosive tags & triggers)",
+    "Gear-Gear Fruit (mechanical augmentation)",
+    "Circuit-Circuit Fruit (bio-electric tech)",
+    "Plasma-Plasma Fruit (hyper-heated energy)",
+    "Mist-Mist Fruit (concealment & illusions)",
+    "Dream-Dream Fruit (dream constructs)",
+    "Nightmare Fruit (fear-based illusions)",
+    "Ward-Ward Fruit (seals & talismans)",
+    "Rune-Rune Fruit (sigils & glyphs)",
+    "Grave-Grave Fruit (bones & ghosts)",
+    "Soul-Forge Fruit (weaponized souls)",
+    "Chain-Soul Fruit (tethered spirits)",
+    "Mask-Mask Fruit (form & stat swapping)",
+    "Script-Script Fruit (rewrite rules of a scene)",
+    "Pulse-Pulse Fruit (shockwaves & heartbeats)",
+    "Lens-Lens Fruit (focus & amplify beams)",
+    "Orbit-Orbit Fruit (satellite projectiles)",
+    "Seed-Seed Fruit (explosive seeds)",
+    "Virus-Bloom Fruit (spreading debuff fields)",
+    "Steam-Steam Fruit (scalding pressure)",
+    "Graviton Fruit (localized black holes)",
+    "Circuit-Beast Fruit (cybernetic zoan)",
+    "Clock-Clock Fruit (slow/haste fields)",
+    "Fuse-Fuse Fruit (merge objects or bodies)",
+    "Copy-Beast Fruit (copy enemy zoans)",
+    "Shard-Shard Fruit (splitting self into shards)",
+    "Core-Core Fruit (anchor point body)",
+    "Shell-Shell Fruit (layered armor forms)",
+    "Page-Page Fruit (summon things from pages)",
+    "Chain-Sky Fruit (hook onto clouds & air)",
+    "Nebula-Nebula Fruit (gas and starlight)",
+    "Obsidian-Obsidian Fruit (glass-black blades)",
+    "Frost-Fire Fruit (cold + burn duality)",
+    "Thunder-Dragon Fruit (mythical zone)",
+    "Storm-Serpent Fruit (mythical sea dragon)",
+    "Solar-Solar Fruit (sun flares & heat)",
+    "Lunar-Lunar Fruit (gravity tides & illusions)",
+    "Pulse-Beast Fruit (beating heart monster form)",
+    "Blood-Forge Fruit (weapons from blood)",
+    "Ink-Beast Fruit (living ink beast form)",
+    "Magnet-Dragon Fruit (magnetic draconic form)",
+    "Chain-Flame Fruit (fiery chains)",
+    "Void-Void Fruit (erase space snippets)",
+    "Echo-Dragon Fruit (sound dragon roars)",
+    "Grave-Beast Fruit (undead beast form)",
+    "Galaxy-Galaxy Fruit (microcosm space control)",
+    "Toxin-Toxin Fruit (stacking poison debuffs)",
+    "Nectar-Nectar Fruit (healing & toxic honey)",
+    "Blossom-Dragon Fruit (floral dragon zone)",
+    "Storm-Gear Fruit (mechanical storm armor)",
+    "Solar-Beast Fruit (radiant beast zone)",
+    "Chimera-Chimera Fruit (multi-beast hybrid)",
+    "Rune-Beast Fruit (inscribed beast form)",
+    "Relic-Relic Fruit (ancient artifact body)",
+    "Circuit-Dragon Fruit (techno-dragon zone)",
+    "Quantum-Quantum Fruit (shift positions & states)"
   ];
 
   const charRole = document.getElementById("char-role");
@@ -812,11 +934,15 @@ function randomizeInputs() {
     randomSample(styleInputs, randomInt(1, 3)).forEach((el) => (el.checked = true));
   }
 
-  // Combo focus (moderate+)
-  const comboSelect = document.getElementById("combo-focus");
-  if (comboSelect && uiComplexityLevel >= 1) {
-    const options = ["any", "single", "combo", "transformation", "awakening"];
-    comboSelect.value = randomChoice(options);
+  // Combo focus (moderate+; now multi-select)
+  const comboInputs = Array.from(
+    document.querySelectorAll('input[name="comboFocus"]')
+  );
+  if (comboInputs.length && uiComplexityLevel >= 1) {
+    comboInputs.forEach((el) => (el.checked = false));
+    randomSample(comboInputs, randomInt(1, Math.min(2, comboInputs.length))).forEach(
+      (el) => (el.checked = true)
+    );
   }
 
   // Number of abilities + package type
