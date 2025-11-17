@@ -308,7 +308,7 @@
           <!-- Multi-character combo builder (complex only) -->
           <div class="card" data-ui-min="2">
             <h2>
-              Multi-Character Combo Builder
+              Multi-Character Combo (Complex Only)
               <span
                 class="help-icon"
                 title="For complex setups where 2+ characters combine powers into one over-the-top attack."
@@ -317,19 +317,25 @@
             </h2>
             <label class="checkbox-inline">
               <input type="checkbox" id="enable-multi-combo" />
-              Enable multi-character combo attack builder (2+ characters combine into one move)
+              Enable multi-character combo attack builder
             </label>
+
+            <p class="hint">
+              Describe each participant and what they bring (devil fruits, weapons, support, setup). The AI will
+              build abilities that assume a coordinated team attack that’s stronger than using their powers
+              separately.
+            </p>
 
             <div id="combo-participants-container"></div>
 
-            <button id="add-participant-btn" type="button" class="chip small" style="margin-top:6px;">
-              Add participant
+            <button
+              id="add-participant-btn"
+              type="button"
+              class="chip small"
+              style="margin-top:6px;"
+            >
+              + Add Participant
             </button>
-
-            <p class="hint">
-              Works best for 2–4 participants. Some may have devil fruits, others might bring weapons,
-              haki, or support. The generated moves should be stronger than everyone acting separately.
-            </p>
           </div>
         </section>
 
@@ -499,8 +505,8 @@
                   type="number"
                   min="1"
                   max="10"
-                  value="6"
                   step="1"
+                  value="6"
                 />
                 <span id="power-level-display" class="power-level-display">
                   6 – Strong PC / elite enemy
@@ -561,7 +567,8 @@
             </div>
 
             <p class="hint reroll-hint">
-              Reroll = new ability with the same inputs &amp; power level, but a different idea. You can also edit any ability card directly: name, role, DC, damage, etc.
+              Reroll = new ability with the same inputs &amp; power level, but a different idea. You can
+              also edit any ability card directly: name, role, DC, damage, etc.
             </p>
 
             <div id="results" class="results-box">
