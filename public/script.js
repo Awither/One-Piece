@@ -43,8 +43,34 @@ function applyUIComplexity() {
 }
 
 // --- Multi-character combo helpers ---
+
+// NEW: robust container getter/creator so Add Participant always works
+function getOrCreateComboContainer() {
+  let container = document.getElementById("combo-participants-container");
+  if (container) return container;
+
+  const multiCheckbox = document.getElementById("enable-multi-combo");
+  if (!multiCheckbox) return null;
+
+  const card = multiCheckbox.closest(".card");
+  if (!card) return null;
+
+  container = document.createElement("div");
+  container.id = "combo-participants-container";
+
+  // insert just before the Add Participant button if present
+  const addBtn = card.querySelector("#add-participant-btn");
+  if (addBtn && addBtn.parentNode === card) {
+    card.insertBefore(container, addBtn);
+  } else {
+    card.appendChild(container);
+  }
+
+  return container;
+}
+
 function createParticipantCard(initial = {}) {
-  const container = document.getElementById("combo-participants-container");
+  const container = getOrCreateComboContainer();
   if (!container) return;
 
   const card = document.createElement("div");
@@ -128,7 +154,7 @@ function createParticipantCard(initial = {}) {
 }
 
 function collectComboParticipants() {
-  const container = document.getElementById("combo-participants-container");
+  const container = getOrCreateComboContainer();
   if (!container) return [];
 
   const cards = Array.from(container.querySelectorAll(".combo-participant-card"));
@@ -434,8 +460,7 @@ function buildPrompt() {
       "- All saving throw DCs must respect the strict Preferred DC override rule described above."
     );
   }
-  const multiComboCheckbox = document.getElementById("enable-multi-combo");
-  if (multiComboCheckbox && multiComboCheckbox.checked) {
+  if (multiComboEnabled && participants.length) {
     lines.push(
       "- At least one ability should clearly function as a multi-character combo whose impact is greater than all participants acting separately."
     );
@@ -1198,7 +1223,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (enableMultiCombo) {
     enableMultiCombo.addEventListener("change", () => {
-      const container = document.getElementById("combo-participants-container");
+      const container = getOrCreateComboContainer();
       if (enableMultiCombo.checked && container && container.children.length === 0) {
         // Start with 2 participants by default
         createParticipantCard();
@@ -1398,4 +1423,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
-
