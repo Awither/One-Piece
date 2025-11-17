@@ -44,7 +44,6 @@ function applyUIComplexity() {
 
 /* ---------------------- Multi-character combo helpers ---------------------- */
 
-// ensure there's always a container (prevents null reference)
 function getOrCreateComboContainer() {
   let container = document.getElementById("combo-participants-container");
   if (container) return container;
@@ -584,18 +583,18 @@ function renderCards(abilities, powerLevel) {
       lbl.className = "ability-card-mech-label";
       lbl.textContent = label;
 
-      const inp = document.createElement("input");
-      inp.type = "text";
-      inp.className = "ability-edit-input ability-card-mech-value";
-      inp.value = mech[key] || "";
-      inp.placeholder = "-";
-      inp.addEventListener("input", (e) => {
-        ability.mechanics = ability.mechanics || {};
-        ability.mechanics[key] = e.target.value;
-      });
+      const block = createEditableBlock(
+        mech[key] || "",
+        "-",
+        (text) => {
+          ability.mechanics = ability.mechanics || {};
+          ability.mechanics[key] = text;
+        },
+        "ability-card-mech-value"
+      );
 
       item.appendChild(lbl);
-      item.appendChild(inp);
+      item.appendChild(block);
       mechContainer.appendChild(item);
     }
 
