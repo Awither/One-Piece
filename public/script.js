@@ -154,6 +154,38 @@ function collectComboParticipants() {
     );
 }
 
+// --- Safe JSON extractor for model output ---
+function extractJsonFromRaw(raw) {
+  if (!raw) throw new Error("Empty response text");
+
+  let text = String(raw).trim();
+
+  // Strip Markdown code fences ```json ... ```
+  if (text.startsWith("```")) {
+    text = text.replace(/^```[a-zA-Z0-9]*\s*/, "");
+    const lastFence = text.lastIndexOf("```");
+    if (lastFence !== -1) {
+      text = text.slice(0, lastFence);
+    }
+    text = text.trim();
+  }
+
+  // Strip a leading 'json' token, e.g. "json { ... }"
+  if (text.toLowerCase().startsWith("json")) {
+    text = text.slice(4).trimStart();
+  }
+
+  // Grab from first '{' to last '}' (handles stray text)
+  const firstBrace = text.indexOf("{");
+  const lastBrace = text.lastIndexOf("}");
+  if (firstBrace === -1 || lastBrace === -1 || lastBrace < firstBrace) {
+    throw new Error("No JSON object braces found in response");
+  }
+
+  const jsonSlice = text.slice(firstBrace, lastBrace + 1);
+  return JSON.parse(jsonSlice);
+}
+
 // --- Build the prompt text from all inputs ---
 function buildPrompt() {
   const charName = document.getElementById("char-name").value.trim();
@@ -386,7 +418,7 @@ function buildPrompt() {
     "9: DC 24–28. Mythic-level. May deal 100+ total damage across targets, combine multiple damage types and conditions, and create lasting hazards or terrain changes. Heavy drawback (HP or max HP cost, exhaustion, huge cooldown, chance of backfiring)."
   );
   lines.push(
-    "10: DC 26–32. Godlike, shonen finisher. Encounter- or arc-defining. Massive or arena-scale area, multiple stages of damage, multiple conditions and long-lasting or semi-permanent battlefield impact. Damage can be extremely high (hundreds), but there must be a massive drawback (severe HP drain, permanent scar, once-per-arc usage, risk of losing control, etc.)."
+    "10: DC 29–32. Godlike, shonen finisher. Encounter- or arc-defining. Massive or arena-scale area, multiple stages of damage, multiple conditions and long-lasting or semi-permanent battlefield impact. Damage can be extremely high (hundreds), but there must be a massive drawback (severe HP drain, permanent scar, once-per-arc usage, risk of losing control, etc.)."
   );
   lines.push("");
 
@@ -865,9 +897,16 @@ async function rerollAbility(index) {
 
     let parsed;
     try {
-      parsed = JSON.parse(raw);
+      parsed = extractJsonFromRaw(raw);
     } catch (e) {
-      console.warn("Failed to parse JSON on reroll.", e);
+      console.warn("Failed to parse JSON on reroll, showing raw.", e);
+      const resultsBox = document.getElementById("results");
+      if (resultsBox) {
+        resultsBox.classList.remove("ability-grid");
+        resultsBox.textContent =
+          raw || "(No text returned from API, and no abilities parsed.)";
+      }
+      if (statusText) statusText.textContent = "Error parsing reroll JSON.";
       return;
     }
 
@@ -1293,9 +1332,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
       let parsed;
       try {
-        parsed = JSON.parse(raw);
+        parsed = extractJsonFromRaw(raw);
       } catch (e) {
         console.warn("Failed to parse JSON abilities.", e);
+        if (resultsBox) {
+          resultsBox.classList.remove("ability-grid");
+          resultsBox.textContent =
+            raw || "(No text returned from API, and no abilities parsed.)";
+        }
+        if (statusText) statusText.textContent = "Error parsing JSON.";
+        return;
       }
 
       if (parsed && Array.isArray(parsed.abilities)) {
