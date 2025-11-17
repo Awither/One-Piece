@@ -243,22 +243,14 @@ input[type="checkbox"] {
   gap: 6px;
 }
 
-/* Editable title input inside card */
 .ability-card-title-input {
-  flex: 1;
-  border-radius: var(--radius-md);
+  font-size: 0.98rem;
+  font-weight: 600;
+  border-radius: 6px;
   border: 1px solid #1f2937;
   background: #020617;
   color: var(--text-primary);
-  padding: 4px 6px;
-  font-size: 0.98rem;
-  font-weight: 600;
-}
-
-.ability-card-title-input:focus {
-  border-color: var(--accent);
-  outline: none;
-  box-shadow: 0 0 0 1px var(--accent-soft);
+  padding: 3px 6px;
 }
 
 .ability-card-tag {
@@ -270,65 +262,46 @@ input[type="checkbox"] {
   color: var(--text-muted);
 }
 
-.ability-card-summary {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-}
-
-/* Generic inline edit inputs */
 .ability-edit-input {
-  border-radius: var(--radius-md);
+  font-size: 0.78rem;
+  border-radius: 6px;
   border: 1px solid #1f2937;
   background: #020617;
   color: var(--text-primary);
-  padding: 4px 6px;
-  font-size: 0.8rem;
+  padding: 3px 6px;
 }
 
-.ability-edit-input:focus {
-  border-color: var(--accent);
-  outline: none;
-  box-shadow: 0 0 0 1px var(--accent-soft);
+.ability-role-input {
+  margin-top: 4px;
 }
 
-/* Block-style editable areas (no scrollbars, expand with text) */
+/* Editable blocks (not scrollable) */
 .ability-edit-block {
-  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  padding: 4px 6px;
+  border-radius: 6px;
   border: 1px solid #1f2937;
   background: #020617;
-  color: var(--text-primary);
-  padding: 4px 6px;
-  font-size: 0.8rem;
-  line-height: 1.3;
-  white-space: pre-wrap;
-  min-height: 1.8em;
-}
-
-.ability-edit-block:focus {
-  border-color: var(--accent);
+  min-height: 20px;
   outline: none;
-  box-shadow: 0 0 0 1px var(--accent-soft);
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
-/* Placeholder for contenteditable */
-.ability-edit-block[contenteditable="true"]:empty:before {
+.ability-edit-block:empty::before {
   content: attr(data-placeholder);
   color: var(--text-muted);
+  opacity: 0.7;
 }
 
-/* Description & combo logic just reuse block styling with subtle tweaks */
+.ability-card-summary {
+  margin-top: 4px;
+}
+
 .ability-card-description {
   margin-top: 4px;
 }
 
-.ability-card-combo-logic {
-  margin-top: 4px;
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-/* Mechanics grid */
 .ability-card-mech {
   margin-top: 6px;
   font-size: 0.78rem;
@@ -350,8 +323,12 @@ input[type="checkbox"] {
   color: var(--text-muted);
 }
 
-.ability-card-mech-value {
-  font-size: 0.8rem;
+/* Combo logic text */
+.ability-card-combo-logic {
+  margin-top: 4px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 /* Small inline actions inside card */
@@ -360,6 +337,44 @@ input[type="checkbox"] {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
+}
+
+/* Combo participant cards */
+.combo-participant-card {
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid #1f2937;
+  background: #020617;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.combo-participant-header {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.combo-participant-header input {
+  flex: 1;
+}
+
+.combo-participant-row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 4px;
+}
+
+.combo-remove-btn {
+  border-radius: 999px;
+  border: 1px solid #374151;
+  padding: 3px 8px;
+  font-size: 0.7rem;
+  background: #111827;
+  color: var(--text-muted);
+  cursor: pointer;
 }
 
 /* Toolbar for view + exports */
@@ -500,44 +515,6 @@ input[type="checkbox"] {
   font-size: 0.7rem;
 }
 
-/* Combo participants (complex mode) */
-.combo-participant-card {
-  border-radius: var(--radius-md);
-  border: 1px solid #1f2937;
-  background: #020617;
-  padding: 6px 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 6px;
-}
-
-.combo-participant-header {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-
-.combo-participant-header input {
-  flex: 1;
-}
-
-.combo-remove-btn {
-  border-radius: 999px;
-  border: 1px solid #374151;
-  padding: 3px 8px;
-  font-size: 0.7rem;
-  background: #020617;
-  color: var(--text-muted);
-  cursor: pointer;
-}
-
-.combo-participant-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
 /* Mobile responsiveness */
 @media (max-width: 800px) {
   .app-root {
@@ -558,6 +535,10 @@ input[type="checkbox"] {
   }
 
   .ability-card-mech {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .combo-participant-row {
     grid-template-columns: minmax(0, 1fr);
   }
 }
