@@ -243,9 +243,19 @@ input[type="checkbox"] {
   gap: 6px;
 }
 
-.ability-card-title {
+.ability-card-title-input {
   font-size: 0.98rem;
   font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1px solid #1f2937;
+  background: #020617;
+  color: var(--text-primary);
+  padding: 4px 6px;
+}
+
+.ability-card-title-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-soft);
 }
 
 .ability-card-tag {
@@ -257,9 +267,37 @@ input[type="checkbox"] {
   color: var(--text-muted);
 }
 
+.ability-role-input {
+  margin-top: 4px;
+  font-size: 0.76rem;
+}
+
 .ability-card-summary {
   font-size: 0.78rem;
   color: var(--text-muted);
+}
+
+/* Editable ability fields */
+.ability-edit-input,
+.ability-edit-textarea {
+  font: inherit;
+  border-radius: var(--radius-md);
+  border: 1px solid #1f2937;
+  background: #020617;
+  color: var(--text-primary);
+  padding: 4px 6px;
+  outline: none;
+  font-size: 0.78rem;
+}
+
+.ability-edit-textarea {
+  resize: vertical;
+}
+
+.ability-edit-input:focus,
+.ability-edit-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-soft);
 }
 
 .ability-card-description {
@@ -444,6 +482,84 @@ input[type="checkbox"] {
 .app-footer small {
   color: var(--text-muted);
   font-size: 0.7rem;
+}
+
+/* Multi-character participants */
+.combo-participants {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.combo-participant-card {
+  border-radius: var(--radius-md);
+  border: 1px solid #1f2937;
+  background: #020617;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.combo-participant-header {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.combo-participant-header input {
+  flex: 1;
+}
+
+.combo-participant-row {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.combo-participant-row small {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.combo-participant-card input[type="text"],
+.combo-participant-card textarea {
+  font: inherit;
+  border-radius: var(--radius-md);
+  border: 1px solid #1f2937;
+  background: #020617;
+  color: var(--text-primary);
+  padding: 4px 6px;
+  outline: none;
+  font-size: 0.78rem;
+}
+
+.combo-participant-card textarea {
+  resize: vertical;
+}
+
+.combo-participant-card input[type="text"]:focus,
+.combo-participant-card textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-soft);
+}
+
+.combo-remove-btn {
+  border-radius: 999px;
+  border: 1px solid #4b5563;
+  background: #020617;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+.combo-remove-btn:hover {
+  border-color: #f97316;
+  color: #f97316;
 }
 
 /* Mobile responsiveness */
