@@ -42,6 +42,118 @@ function applyUIComplexity() {
   });
 }
 
+// --- Multi-character combo helpers ---
+function createParticipantCard(initial = {}) {
+  const container = document.getElementById("combo-participants-container");
+  if (!container) return;
+
+  const card = document.createElement("div");
+  card.className = "combo-participant-card";
+
+  const header = document.createElement("div");
+  header.className = "combo-participant-header";
+
+  const nameInput = document.createElement("input");
+  nameInput.type = "text";
+  nameInput.placeholder = "Name";
+  nameInput.className = "combo-participant-name";
+  nameInput.value = initial.name || "";
+
+  const roleInput = document.createElement("input");
+  roleInput.type = "text";
+  roleInput.placeholder = "Role (frontline, sniper, support, etc.)";
+  roleInput.className = "combo-participant-role";
+  roleInput.value = initial.role || "";
+
+  const removeBtn = document.createElement("button");
+  removeBtn.type = "button";
+  removeBtn.textContent = "Remove";
+  removeBtn.className = "combo-remove-btn";
+  removeBtn.addEventListener("click", () => {
+    container.removeChild(card);
+    updatePromptPreview();
+  });
+
+  header.appendChild(nameInput);
+  header.appendChild(roleInput);
+  header.appendChild(removeBtn);
+
+  const row = document.createElement("div");
+  row.className = "combo-participant-row";
+
+  const hasFruitLabel = document.createElement("label");
+  hasFruitLabel.className = "checkbox-inline";
+  const hasFruitInput = document.createElement("input");
+  hasFruitInput.type = "checkbox";
+  hasFruitInput.className = "combo-participant-has-fruit";
+  hasFruitInput.checked = !!initial.hasFruit;
+  hasFruitLabel.appendChild(hasFruitInput);
+  const hasFruitText = document.createElement("span");
+  hasFruitText.textContent = "Devil fruit user";
+  hasFruitLabel.appendChild(hasFruitText);
+
+  const fruitInput = document.createElement("input");
+  fruitInput.type = "text";
+  fruitInput.placeholder = "Devil fruit / core power (if any)";
+  fruitInput.className = "combo-participant-fruit";
+  fruitInput.value = initial.fruitPower || "";
+
+  const nonFruitInput = document.createElement("input");
+  nonFruitInput.type = "text";
+  nonFruitInput.placeholder = "Non-fruit skills / weapons";
+  nonFruitInput.className = "combo-participant-nonfruit";
+  nonFruitInput.value = initial.nonFruit || "";
+
+  row.appendChild(hasFruitLabel);
+  row.appendChild(fruitInput);
+  row.appendChild(nonFruitInput);
+
+  const notes = document.createElement("textarea");
+  notes.rows = 2;
+  notes.placeholder =
+    "What they contribute to the combo: setup, damage, support, control, emotional beat, etc.";
+  notes.className = "combo-participant-notes";
+  notes.value = initial.notes || "";
+
+  card.appendChild(header);
+  card.appendChild(row);
+  card.appendChild(notes);
+
+  [nameInput, roleInput, hasFruitInput, fruitInput, nonFruitInput, notes].forEach((el) => {
+    el.addEventListener("input", updatePromptPreview);
+    el.addEventListener("change", updatePromptPreview);
+  });
+
+  container.appendChild(card);
+}
+
+function collectComboParticipants() {
+  const container = document.getElementById("combo-participants-container");
+  if (!container) return [];
+
+  const cards = Array.from(container.querySelectorAll(".combo-participant-card"));
+  return cards
+    .map((card) => {
+      const name = card.querySelector(".combo-participant-name")?.value.trim() || "";
+      const role = card.querySelector(".combo-participant-role")?.value.trim() || "";
+      const hasFruit = card.querySelector(".combo-participant-has-fruit")?.checked || false;
+      const fruitPower =
+        card.querySelector(".combo-participant-fruit")?.value.trim() || "";
+      const nonFruit =
+        card.querySelector(".combo-participant-nonfruit")?.value.trim() || "";
+      const notes = card.querySelector(".combo-participant-notes")?.value.trim() || "";
+      return { name, role, hasFruit, fruitPower, nonFruit, notes };
+    })
+    .filter(
+      (p) =>
+        p.name ||
+        p.role ||
+        p.fruitPower ||
+        p.nonFruit ||
+        p.notes
+    );
+}
+
 // --- Build the prompt text from all inputs ---
 function buildPrompt() {
   const charName = document.getElementById("char-name").value.trim();
@@ -81,6 +193,11 @@ function buildPrompt() {
   const includeComboExplanation = document.getElementById(
     "include-combo-explanation"
   )?.checked;
+
+  const multiComboCheckbox = document.getElementById("enable-multi-combo");
+  const multiComboEnabled =
+    uiComplexityLevel >= 2 && multiComboCheckbox && multiComboCheckbox.checked;
+  const participants = multiComboEnabled ? collectComboParticipants() : [];
 
   const lines = [];
 
@@ -141,6 +258,32 @@ function buildPrompt() {
   }
   lines.push("");
 
+  if (multiComboEnabled && participants.length) {
+    lines.push("=== Multi-Character Combo Attack (Complex Mode) ===");
+    lines.push(
+      "The abilities should assume a coordinated multi-character combo attack that is more powerful than all participants acting separately. Synergy and combined effects are crucial."
+    );
+    lines.push("Participants:");
+    participants.forEach((p, idx) => {
+      lines.push(
+        `- Participant ${idx + 1}: ` +
+          `Name: ${p.name || "Unnamed"}; ` +
+          (p.role ? `Role: ${p.role}; ` : "") +
+          (p.hasFruit ? "Devil fruit user; " : "No devil fruit; ") +
+          (p.fruitPower ? `Fruit/Power: ${p.fruitPower}; ` : "") +
+          (p.nonFruit ? `Non-fruit skills/weapons: ${p.nonFruit}; ` : "") +
+          (p.notes ? `Combo contribution: ${p.notes}` : "")
+      );
+    });
+    lines.push(
+      "At least one major ability should explicitly require multiple participants to execute (timing, positioning, or layered effects), and its impact should clearly exceed the sum of their solo abilities."
+    );
+    lines.push(
+      "Make the mechanics show this synergy: boosted or scaling DCs, extra riders, or amplified damage/area when all participants contribute."
+    );
+    lines.push("");
+  }
+
   lines.push("=== Output Style Preferences ===");
   lines.push(
     "Number of abilities: " +
@@ -187,10 +330,18 @@ function buildPrompt() {
   }
 
   lines.push("Preferred model: " + modelChoice);
-  lines.push(
-    "Preferred DC: " +
-      (preferredDc || "Choose based on power level")
-  );
+
+  if (preferredDc) {
+    lines.push(
+      "Preferred DC override: " +
+        preferredDc +
+        ". If this is a single numeric DC (e.g. 30), then every saving throw DC you output must be either exactly that value or exactly 1 lower (e.g. 29–30 only). Do NOT go above it or more than 1 below it unless it is literally impossible to make the mechanics work."
+    );
+  } else {
+    lines.push(
+      "No fixed DC override specified; choose DCs strictly according to the power level ladder below."
+    );
+  }
 
   lines.push(
     "Desired power level (1–10): " +
@@ -205,28 +356,63 @@ function buildPrompt() {
   lines.push("");
   lines.push("=== Power Level Mechanics Ladder (IMPORTANT) ===");
   lines.push(
-    "Use this ladder to scale DC, damage, area, effects, and drawbacks."
+    "Use this ladder to scale DC, damage, area, effects, and drawbacks. Do not downgrade high power levels to feel 'balanced' — they may be broken on purpose if drawbacks are appropriate."
   );
-  lines.push("1: DC 4–6...");
-  lines.push("2: DC 6–7...");
-  lines.push("3: DC 7–9...");
-  lines.push("4: DC 9–11...");
-  lines.push("5: DC 11–13...");
-  lines.push("6: DC 13–16...");
-  lines.push("7: DC 16–20...");
-  lines.push("8: DC 20–23...");
-  lines.push("9: DC 24–28...");
-  lines.push("10: DC 26–32...");
+  lines.push(
+    "1: DC 4–6. Very weak / trivial. 0–1 die or tiny effect. Mostly utility or soft flavor. No real drawback."
+  );
+  lines.push(
+    "2: DC 6–7. Very weak but noticeable. 1–2 dice or a light debuff. Small area or single target. No real drawback."
+  );
+  lines.push(
+    "3: DC 7–9. Weak but useful. 1–2 dice + minor rider or small control. Still feels like a low-impact trick."
+  );
+  lines.push(
+    "4: DC 9–11. Low-tier solid move. 2–3 dice, small area or moderate utility. Could be a secondary attack option."
+  );
+  lines.push(
+    "5: DC 11–13. Standard PC-level ability. 3–4 dice, clear and reliable effect. Good mainline combat option."
+  );
+  lines.push(
+    "6: DC 13–16. Strong PC / elite enemy move. 4–5 dice or strong control in a modest area. No or light drawback."
+  );
+  lines.push(
+    "7: DC 16–20. Boss-tier. 6–8 dice OR strong control in a decent area. Must include a meaningful drawback (HP cost, limited uses, self-debuff, etc.)."
+  );
+  lines.push(
+    "8: DC 20–23. Very high, near-mythic. 8–10+ dice OR large area with strong conditions (stun, restrain, banish) or powerful battlefield control. Serious drawback is required."
+  );
+  lines.push(
+    "9: DC 24–28. Mythic-level. May deal 100+ total damage across targets, combine multiple damage types and conditions, and create lasting hazards or terrain changes. Heavy drawback (HP or max HP cost, exhaustion, huge cooldown, chance of backfiring)."
+  );
+  lines.push(
+    "10: DC 26–32. Godlike, shonen finisher. Encounter- or arc-defining. Massive or arena-scale area, multiple stages of damage, multiple conditions and long-lasting or semi-permanent battlefield impact. Damage can be extremely high (hundreds), but there must be a massive drawback (severe HP drain, permanent scar, once-per-arc usage, risk of losing control, etc.)."
+  );
   lines.push("");
 
   lines.push("=== Mechanics Requirements (IMPORTANT) ===");
-  lines.push("- Must use clear DnD-like action economy.");
-  lines.push("- Keep effects readable (no paragraphs).");
-  lines.push("- Must match the power level.");
-  lines.push("- Must include a role tag for each ability.");
+  lines.push("- Must use clear DnD-like action economy (Action / Bonus Action / Reaction, etc.).");
+  lines.push("- Keep effects readable (no walls of text).");
+  lines.push("- Mechanics (DC, damage, area, conditions, drawbacks) MUST visibly match the power level.");
+  lines.push(
+    "- For each ability, explicitly assign a mechanical role field (Offense, Defense, Support, Control, Utility, Finisher, or hybrid tags)."
+  );
+  if (preferredDc) {
+    lines.push(
+      "- All saving throw DCs must respect the strict Preferred DC override rule described above."
+    );
+  }
+  if (multiComboEnabled && participants.length) {
+    lines.push(
+      "- At least one ability should clearly function as a multi-character combo whose impact is greater than all participants acting separately."
+    );
+  }
   lines.push("");
 
   lines.push("=== Output JSON Format (REQUIRED) ===");
+  lines.push(
+    "Respond ONLY with valid JSON in this exact structure, with no extra text before or after:"
+  );
   lines.push(`
 {
   "abilities": [
@@ -276,9 +462,14 @@ function renderCards(abilities, powerLevel) {
     const header = document.createElement("div");
     header.className = "ability-card-header";
 
-    const title = document.createElement("div");
-    title.className = "ability-card-title";
-    title.textContent = ability.name || `Ability ${index + 1}`;
+    const titleInput = document.createElement("input");
+    titleInput.type = "text";
+    titleInput.className = "ability-card-title-input ability-edit-input";
+    titleInput.value = ability.name || `Ability ${index + 1}`;
+    titleInput.placeholder = "Ability Name";
+    titleInput.addEventListener("input", (e) => {
+      ability.name = e.target.value;
+    });
 
     const tag = document.createElement("div");
     tag.className = "ability-card-tag";
@@ -286,27 +477,46 @@ function renderCards(abilities, powerLevel) {
     tag.textContent =
       describePowerLevel(powerLevel) + (roleText ? " · " + roleText : "");
 
-    header.appendChild(title);
+    header.appendChild(titleInput);
     header.appendChild(tag);
 
-    // Summary
-    const summary = document.createElement("div");
-    summary.className = "ability-card-summary";
-    summary.textContent =
+    const roleInput = document.createElement("input");
+    roleInput.type = "text";
+    roleInput.className = "ability-edit-input ability-role-input";
+    roleInput.placeholder = "Role: Offense / Defense / Support / Control / Utility / Finisher";
+    roleInput.value = ability.role || "";
+    roleInput.addEventListener("input", (e) => {
+      ability.role = e.target.value;
+      const rText = e.target.value ? String(e.target.value) : "";
+      tag.textContent =
+        describePowerLevel(powerLevel) + (rText ? " · " + rText : "");
+    });
+
+    const summaryInput = document.createElement("textarea");
+    summaryInput.className = "ability-edit-textarea";
+    summaryInput.rows = 2;
+    summaryInput.placeholder = "One-line summary of what the ability does.";
+    summaryInput.value =
       ability.summary ||
-      "No summary provided — consider adding a brief one-line explanation.";
+      "";
+    summaryInput.addEventListener("input", (e) => {
+      ability.summary = e.target.value;
+    });
 
-    // Description
-    const description = document.createElement("div");
-    description.className = "ability-card-description";
-    description.textContent = ability.description || "No description provided.";
+    const descriptionInput = document.createElement("textarea");
+    descriptionInput.className = "ability-edit-textarea ability-card-description";
+    descriptionInput.rows = 3;
+    descriptionInput.placeholder = "Cinematic but concise description.";
+    descriptionInput.value = ability.description || "";
+    descriptionInput.addEventListener("input", (e) => {
+      ability.description = e.target.value;
+    });
 
-    // Mechanics
-    const mech = ability.mechanics || {};
+    const mech = ability.mechanics || (ability.mechanics = {});
     const mechContainer = document.createElement("div");
     mechContainer.className = "ability-card-mech";
 
-    function addMechItem(label, value) {
+    function addEditableMechItem(label, key) {
       const item = document.createElement("div");
       item.className = "ability-card-mech-item";
 
@@ -314,34 +524,45 @@ function renderCards(abilities, powerLevel) {
       lbl.className = "ability-card-mech-label";
       lbl.textContent = label;
 
-      const val = document.createElement("div");
-      val.className = "ability-card-mech-value";
-      val.textContent = value || "-";
+      const inp = document.createElement("input");
+      inp.type = "text";
+      inp.className = "ability-edit-input ability-card-mech-value";
+      inp.value = mech[key] || "";
+      inp.placeholder = "-";
+      inp.addEventListener("input", (e) => {
+        ability.mechanics = ability.mechanics || {};
+        ability.mechanics[key] = e.target.value;
+      });
 
       item.appendChild(lbl);
-      item.appendChild(val);
+      item.appendChild(inp);
       mechContainer.appendChild(item);
     }
 
-    addMechItem("Action", mech.action_type);
-    addMechItem("Range", mech.range);
-    addMechItem("Target", mech.target);
-    addMechItem("Save", mech.save);
-    addMechItem("DC", mech.dc);
-    addMechItem("Damage", mech.damage);
-    addMechItem("Effect", mech.effect);
+    addEditableMechItem("Action", "action_type");
+    addEditableMechItem("Range", "range");
+    addEditableMechItem("Target", "target");
+    addEditableMechItem("Save", "save");
+    addEditableMechItem("DC", "dc");
+    addEditableMechItem("Damage", "damage");
+    addEditableMechItem("Effect", "effect");
 
     card.appendChild(header);
-    card.appendChild(summary);
-    card.appendChild(description);
+    card.appendChild(roleInput);
+    card.appendChild(summaryInput);
+    card.appendChild(descriptionInput);
     card.appendChild(mechContainer);
 
-    if (ability.combo_logic) {
-      const comboLogic = document.createElement("div");
-      comboLogic.className = "ability-card-combo-logic";
-      comboLogic.textContent = "Combo logic: " + ability.combo_logic;
-      card.appendChild(comboLogic);
-    }
+    const comboLogicInput = document.createElement("textarea");
+    comboLogicInput.className = "ability-edit-textarea ability-card-combo-logic";
+    comboLogicInput.rows = 2;
+    comboLogicInput.placeholder =
+      "Optional: how the fruits/powers interact (combo logic).";
+    comboLogicInput.value = ability.combo_logic || "";
+    comboLogicInput.addEventListener("input", (e) => {
+      ability.combo_logic = e.target.value;
+    });
+    card.appendChild(comboLogicInput);
 
     const actions = document.createElement("div");
     actions.className = "ability-card-actions";
@@ -509,7 +730,9 @@ function loadSavedSetsFromStorage() {
 function saveSetsToStorage(sets) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(sets));
-  } catch {}
+  } catch {
+    // ignore
+  }
 }
 
 function refreshSavedSetsDropdown() {
@@ -694,7 +917,7 @@ function randomSample(array, count) {
 }
 
 function randomizeInputs() {
-  // optional: simple random theme/role
+  // simple random role
   const roles = [
     "Frontline bruiser",
     "Sniper",
@@ -704,6 +927,7 @@ function randomizeInputs() {
     "Battlefield controller"
   ];
 
+  // 100+ devil-fruit flavored themes
   const themes = [
     "Red lightning",
     "Sandstorm titan",
@@ -838,10 +1062,10 @@ function randomizeInputs() {
   // Combo focus (multi-select)
   const comboChecks = document.querySelectorAll('input[name="comboFocus"]');
   comboChecks.forEach((el) => (el.checked = false));
-  const options = ["any", "single", "combo", "transformation", "awakening"];
-  const chosen = randomSample(options, randomInt(1, 3));
+  const comboOptions = ["any", "single", "combo", "transformation", "awakening"];
+  const chosenCombo = randomSample(comboOptions, randomInt(1, 3));
   comboChecks.forEach((el) => {
-    if (chosen.includes(el.value)) el.checked = true;
+    if (chosenCombo.includes(el.value)) el.checked = true;
   });
 
   // Number of abilities + package type
@@ -903,6 +1127,29 @@ document.addEventListener("DOMContentLoaded", () => {
   if (uiComplexSelect) {
     uiComplexSelect.addEventListener("change", () => {
       applyUIComplexity();
+      updatePromptPreview();
+    });
+  }
+
+  // Multi-character combo controls
+  const enableMultiCombo = document.getElementById("enable-multi-combo");
+  const addParticipantBtn = document.getElementById("add-participant-btn");
+
+  if (enableMultiCombo) {
+    enableMultiCombo.addEventListener("change", () => {
+      const container = document.getElementById("combo-participants-container");
+      if (enableMultiCombo.checked && container && container.children.length === 0) {
+        // Start with 2 participants by default
+        createParticipantCard();
+        createParticipantCard();
+      }
+      updatePromptPreview();
+    });
+  }
+
+  if (addParticipantBtn) {
+    addParticipantBtn.addEventListener("click", () => {
+      createParticipantCard();
       updatePromptPreview();
     });
   }
