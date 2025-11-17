@@ -418,7 +418,7 @@ function buildPrompt() {
     "9: DC 24–28. Mythic-level. May deal 100+ total damage across targets, combine multiple damage types and conditions, and create lasting hazards or terrain changes. Heavy drawback (HP or max HP cost, exhaustion, huge cooldown, chance of backfiring)."
   );
   lines.push(
-    "10: DC 29–32. Godlike, shonen finisher. Encounter- or arc-defining. Massive or arena-scale area, multiple stages of damage, multiple conditions and long-lasting or semi-permanent battlefield impact. Damage can be extremely high (hundreds), but there must be a massive drawback (severe HP drain, permanent scar, once-per-arc usage, risk of losing control, etc.)."
+    "10: DC 26–32. Godlike, shonen finisher. Encounter- or arc-defining. Massive or arena-scale area, multiple stages of damage, multiple conditions and long-lasting or semi-permanent battlefield impact. Damage can be extremely high (hundreds), but there must be a massive drawback (severe HP drain, permanent scar, once-per-arc usage, risk of losing control, etc.)."
   );
   lines.push("");
 
@@ -434,7 +434,8 @@ function buildPrompt() {
       "- All saving throw DCs must respect the strict Preferred DC override rule described above."
     );
   }
-  if (multiComboEnabled && participants.length) {
+  const multiComboCheckbox = document.getElementById("enable-multi-combo");
+  if (multiComboCheckbox && multiComboCheckbox.checked) {
     lines.push(
       "- At least one ability should clearly function as a multi-character combo whose impact is greater than all participants acting separately."
     );
@@ -472,14 +473,32 @@ function buildPrompt() {
   return lines.join("\n");
 }
 
-// Update preview
+// Update the preview textarea
 function updatePromptPreview() {
   const prompt = buildPrompt();
   const preview = document.getElementById("prompt-preview");
-  if (preview) preview.value = prompt;
+  if (preview) {
+    preview.value = prompt;
+  }
 }
 
-// --- Rendering Abilities (cards + table) ---
+// --- helper: editable block (no scroll, grows with text) ---
+function createEditableBlock(initialText, placeholder, onChange, extraClass) {
+  const div = document.createElement("div");
+  div.className = "ability-edit-block" + (extraClass ? " " + extraClass : "");
+  div.contentEditable = "true";
+  div.textContent = initialText ? String(initialText) : "";
+  if (placeholder) {
+    div.dataset.placeholder = placeholder;
+  }
+  div.addEventListener("input", () => {
+    onChange(div.textContent);
+  });
+  return div;
+}
+
+// --- Rendering ---
+
 function renderCards(abilities, powerLevel) {
   const resultsBox = document.getElementById("results");
   if (!resultsBox) return;
@@ -496,7 +515,7 @@ function renderCards(abilities, powerLevel) {
 
     const titleInput = document.createElement("input");
     titleInput.type = "text";
-    titleInput.className = "ability-card-title-input ability-edit-input";
+    titleInput.className = "ability-card-title-input";
     titleInput.value = ability.name || `Ability ${index + 1}`;
     titleInput.placeholder = "Ability Name";
     titleInput.addEventListener("input", (e) => {
@@ -524,25 +543,23 @@ function renderCards(abilities, powerLevel) {
         describePowerLevel(powerLevel) + (rText ? " · " + rText : "");
     });
 
-    const summaryInput = document.createElement("textarea");
-    summaryInput.className = "ability-edit-textarea";
-    summaryInput.rows = 2;
-    summaryInput.placeholder = "One-line summary of what the ability does.";
-    summaryInput.value =
-      ability.summary ||
-      "";
-    summaryInput.addEventListener("input", (e) => {
-      ability.summary = e.target.value;
-    });
+    const summaryBlock = createEditableBlock(
+      ability.summary || "",
+      "One-line summary of what the ability does.",
+      (text) => {
+        ability.summary = text;
+      },
+      "ability-card-summary"
+    );
 
-    const descriptionInput = document.createElement("textarea");
-    descriptionInput.className = "ability-edit-textarea ability-card-description";
-    descriptionInput.rows = 3;
-    descriptionInput.placeholder = "Cinematic but concise description.";
-    descriptionInput.value = ability.description || "";
-    descriptionInput.addEventListener("input", (e) => {
-      ability.description = e.target.value;
-    });
+    const descriptionBlock = createEditableBlock(
+      ability.description || "",
+      "Cinematic but concise description of how it looks and feels.",
+      (text) => {
+        ability.description = text;
+      },
+      "ability-card-description"
+    );
 
     const mech = ability.mechanics || (ability.mechanics = {});
     const mechContainer = document.createElement("div");
@@ -579,22 +596,21 @@ function renderCards(abilities, powerLevel) {
     addEditableMechItem("Damage", "damage");
     addEditableMechItem("Effect", "effect");
 
+    const comboLogicBlock = createEditableBlock(
+      ability.combo_logic || "",
+      "Optional: how the fruits/powers interact (combo logic).",
+      (text) => {
+        ability.combo_logic = text;
+      },
+      "ability-card-combo-logic"
+    );
+
     card.appendChild(header);
     card.appendChild(roleInput);
-    card.appendChild(summaryInput);
-    card.appendChild(descriptionInput);
+    card.appendChild(summaryBlock);
+    card.appendChild(descriptionBlock);
     card.appendChild(mechContainer);
-
-    const comboLogicInput = document.createElement("textarea");
-    comboLogicInput.className = "ability-edit-textarea ability-card-combo-logic";
-    comboLogicInput.rows = 2;
-    comboLogicInput.placeholder =
-      "Optional: how the fruits/powers interact (combo logic).";
-    comboLogicInput.value = ability.combo_logic || "";
-    comboLogicInput.addEventListener("input", (e) => {
-      ability.combo_logic = e.target.value;
-    });
-    card.appendChild(comboLogicInput);
+    card.appendChild(comboLogicBlock);
 
     const actions = document.createElement("div");
     actions.className = "ability-card-actions";
@@ -691,6 +707,7 @@ function renderAbilitiesView() {
 }
 
 // --- Copy helpers ---
+
 function formatAbilityText(ability, powerLevel) {
   const mech = ability.mechanics || {};
   const roleText = ability.role ? `Role: ${ability.role}\n` : "";
@@ -728,6 +745,7 @@ function copyAllAbilities() {
 }
 
 // --- Download stat sheet as .txt ---
+
 function downloadStatSheet() {
   const powerLevel =
     parseInt(document.getElementById("power-level").value, 10) || 6;
@@ -748,6 +766,7 @@ function downloadStatSheet() {
 }
 
 // --- Saved sets (localStorage databank) ---
+
 function loadSavedSetsFromStorage() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -842,6 +861,7 @@ function handleDeleteSet() {
 }
 
 // --- Reroll a single ability ---
+
 async function rerollAbility(index) {
   if (!lastAbilities.length) return;
 
@@ -870,11 +890,11 @@ async function rerollAbility(index) {
   const statusText = document.getElementById("status-text");
   if (statusText) statusText.textContent = "Rerolling ability " + (index + 1) + "...";
 
+  // Make a copy so we can undo
   lastAbilitiesBeforeReroll = lastAbilities.map((a) => ({
     ...a,
     mechanics: { ...(a.mechanics || {}) }
   }));
-
   const undoBtn = document.getElementById("undo-reroll-btn");
   if (undoBtn) undoBtn.disabled = true;
 
@@ -899,7 +919,7 @@ async function rerollAbility(index) {
     try {
       parsed = extractJsonFromRaw(raw);
     } catch (e) {
-      console.warn("Failed to parse JSON on reroll, showing raw.", e);
+      console.warn("Failed to parse JSON on reroll; aborting reroll.", e);
       const resultsBox = document.getElementById("results");
       if (resultsBox) {
         resultsBox.classList.remove("ability-grid");
@@ -936,6 +956,7 @@ function undoLastReroll() {
 }
 
 // --- Randomizer helpers ---
+
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -956,7 +977,7 @@ function randomSample(array, count) {
 }
 
 function randomizeInputs() {
-  // simple random role
+  // optional: simple random theme/role
   const roles = [
     "Frontline bruiser",
     "Sniper",
@@ -966,7 +987,6 @@ function randomizeInputs() {
     "Battlefield controller"
   ];
 
-  // 100+ devil-fruit flavored themes
   const themes = [
     "Red lightning",
     "Sandstorm titan",
@@ -1131,7 +1151,7 @@ function randomizeInputs() {
     styleSelect.value = randomChoice(opts);
   }
 
-  // Mechanics detail + ability complexity
+  // Mechanics detail + ability complexity (moderate+)
   const mechDetail = document.getElementById("mechanics-detail");
   const complexitySelect = document.getElementById("complexity-level");
   if (mechDetail && uiComplexityLevel >= 1) {
@@ -1141,7 +1161,7 @@ function randomizeInputs() {
     complexitySelect.value = randomChoice(["simple", "moderate", "complex"]);
   }
 
-  // Tone epic
+  // Tone epic (moderate+)
   const toneEpic = document.getElementById("tone-epic");
   if (toneEpic && uiComplexityLevel >= 1) {
     toneEpic.checked = true;
@@ -1157,11 +1177,13 @@ function randomizeInputs() {
   updatePromptPreview();
 }
 
-// --- Attach listeners (DOM Ready) ---
+// --- Attach listeners once the DOM is ready ---
+
 document.addEventListener("DOMContentLoaded", () => {
-  // Apply UI complexity
+  // Apply initial UI complexity
   applyUIComplexity();
 
+  // Complexity selector change
   const uiComplexSelect = document.getElementById("ui-complexity");
   if (uiComplexSelect) {
     uiComplexSelect.addEventListener("change", () => {
@@ -1193,15 +1215,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- FIXED POWER LEVEL INPUT (mobile friendly) ---
+  // Initial power label (mobile-friendly)
   const powerInput = document.getElementById("power-level");
   const powerDisplay = document.getElementById("power-level-display");
-
   if (powerInput && powerDisplay) {
     const updatePowerUI = () => {
       const raw = powerInput.value;
 
-      // Allow empty on mobile while typing
       if (raw === "") {
         powerDisplay.textContent = "Choose a power level (1–10)";
         updatePromptPreview();
@@ -1210,7 +1230,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       let val = parseInt(raw, 10);
       if (Number.isNaN(val)) return;
-
       if (val > 10) val = 10;
       if (val < 1) val = 1;
 
@@ -1219,17 +1238,15 @@ document.addEventListener("DOMContentLoaded", () => {
       updatePromptPreview();
     };
 
-    // Initial display text
     powerDisplay.textContent = describePowerLevel(powerInput.value || 6);
-
     powerInput.addEventListener("input", updatePowerUI);
     powerInput.addEventListener("change", updatePowerUI);
   }
 
-  // Initial prompt
+  // Initial prompt fill
   updatePromptPreview();
 
-  // Rebuild prompt on input changes
+  // Rebuild the prompt anytime an input changes
   const inputs = document.querySelectorAll("input, textarea, select");
   inputs.forEach((el) => {
     el.addEventListener("input", updatePromptPreview);
@@ -1254,7 +1271,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Buttons
+  // Export / copy buttons
   const copyAllBtn = document.getElementById("copy-all-btn");
   if (copyAllBtn) {
     copyAllBtn.addEventListener("click", copyAllAbilities);
@@ -1270,23 +1287,35 @@ document.addEventListener("DOMContentLoaded", () => {
     printBtn.addEventListener("click", () => window.print());
   }
 
+  // Undo reroll
   const undoBtn = document.getElementById("undo-reroll-btn");
-  if (undoBtn) undoBtn.addEventListener("click", undoLastReroll);
+  if (undoBtn) {
+    undoBtn.addEventListener("click", undoLastReroll);
+  }
 
+  // Randomize button
   const randomizeBtn = document.getElementById("randomize-btn");
-  if (randomizeBtn) randomizeBtn.addEventListener("click", randomizeInputs);
+  if (randomizeBtn) {
+    randomizeBtn.addEventListener("click", randomizeInputs);
+  }
 
   // Saved sets
   refreshSavedSetsDropdown();
 
   const saveSetBtn = document.getElementById("save-set-btn");
-  if (saveSetBtn) saveSetBtn.addEventListener("click", handleSaveSet);
+  if (saveSetBtn) {
+    saveSetBtn.addEventListener("click", handleSaveSet);
+  }
 
   const loadSetSelect = document.getElementById("load-set-select");
-  if (loadSetSelect) loadSetSelect.addEventListener("change", handleLoadSet);
+  if (loadSetSelect) {
+    loadSetSelect.addEventListener("change", handleLoadSet);
+  }
 
   const deleteSetBtn = document.getElementById("delete-set-btn");
-  if (deleteSetBtn) deleteSetBtn.addEventListener("click", handleDeleteSet);
+  if (deleteSetBtn) {
+    deleteSetBtn.addEventListener("click", handleDeleteSet);
+  }
 
   // Generate button
   const generateBtn = document.getElementById("generate-btn");
@@ -1334,7 +1363,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         parsed = extractJsonFromRaw(raw);
       } catch (e) {
-        console.warn("Failed to parse JSON abilities.", e);
+        console.warn("Failed to parse JSON abilities, falling back to raw text.", e);
         if (resultsBox) {
           resultsBox.classList.remove("ability-grid");
           resultsBox.textContent =
