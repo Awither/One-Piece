@@ -42,9 +42,9 @@ function applyUIComplexity() {
   });
 }
 
-// --- Multi-character combo helpers ---
+/* ---------------------- Multi-character combo helpers ---------------------- */
 
-// NEW: robust container getter/creator so Add Participant always works
+// ensure there's always a container (prevents null reference)
 function getOrCreateComboContainer() {
   let container = document.getElementById("combo-participants-container");
   if (container) return container;
@@ -58,7 +58,6 @@ function getOrCreateComboContainer() {
   container = document.createElement("div");
   container.id = "combo-participants-container";
 
-  // insert just before the Add Participant button if present
   const addBtn = card.querySelector("#add-participant-btn");
   if (addBtn && addBtn.parentNode === card) {
     card.insertBefore(container, addBtn);
@@ -180,13 +179,12 @@ function collectComboParticipants() {
     );
 }
 
-// --- Safe JSON extractor for model output ---
+/* ------------------------ Safe JSON extraction helper ---------------------- */
+
 function extractJsonFromRaw(raw) {
   if (!raw) throw new Error("Empty response text");
-
   let text = String(raw).trim();
 
-  // Strip Markdown code fences ```json ... ```
   if (text.startsWith("```")) {
     text = text.replace(/^```[a-zA-Z0-9]*\s*/, "");
     const lastFence = text.lastIndexOf("```");
@@ -196,12 +194,10 @@ function extractJsonFromRaw(raw) {
     text = text.trim();
   }
 
-  // Strip a leading 'json' token, e.g. "json { ... }"
   if (text.toLowerCase().startsWith("json")) {
     text = text.slice(4).trimStart();
   }
 
-  // Grab from first '{' to last '}' (handles stray text)
   const firstBrace = text.indexOf("{");
   const lastBrace = text.lastIndexOf("}");
   if (firstBrace === -1 || lastBrace === -1 || lastBrace < firstBrace) {
@@ -212,7 +208,8 @@ function extractJsonFromRaw(raw) {
   return JSON.parse(jsonSlice);
 }
 
-// --- Build the prompt text from all inputs ---
+/* ----------------------------- Build the prompt ---------------------------- */
+
 function buildPrompt() {
   const charName = document.getElementById("char-name").value.trim();
   const charRole = document.getElementById("char-role").value.trim();
@@ -349,7 +346,6 @@ function buildPrompt() {
       ". Each ability MUST include: (1) Ability Name, (2) Role, (3) Summary, (4) Cinematic Description, (5) Simple DnD mechanics."
   );
 
-  // Ability package
   if (abilityPackage === "signature") {
     lines.push("Ability package: 3 Signature Moves. Build a set of iconic moves.");
   } else if (abilityPackage === "finisher") {
@@ -471,43 +467,33 @@ function buildPrompt() {
   lines.push(
     "Respond ONLY with valid JSON in this exact structure, with no extra text before or after:"
   );
-  lines.push(`
-{
-  "abilities": [
-    {
-      "name": "Ability Name",
-      "role": "Offense / Defense / Support / Control / Utility / Finisher",
-      "summary": "1-line summary.",
-      "description": "Short cinematic description.",
-      "combo_logic": "Optional short explanation.",
-      "mechanics": {
-        "action_type": "",
-        "range": "",
-        "target": "",
-        "save": "",
-        "dc": "",
-        "damage": "",
-        "effect": ""
-      }
-    }
-  ]
-}
-  `);
+  lines.push(
+    '{ "abilities": [ { "name": "Ability Name", "role": "Offense / Defense / Support / Control / Utility / Finisher", "summary": "1-line summary.", "description": "Short cinematic description.", "combo_logic": "Optional short explanation.", "mechanics": { "action_type": "", "range": "", "target": "", "save": "", "dc": "", "damage": "", "effect": "" } } ] }'
+  );
   lines.push("Return ONLY valid JSON.");
 
   return lines.join("\n");
 }
 
-// Update the preview textarea
+/* ------------------------- Prompt preview (safe) --------------------------- */
+
 function updatePromptPreview() {
-  const prompt = buildPrompt();
   const preview = document.getElementById("prompt-preview");
-  if (preview) {
+  if (!preview) return;
+
+  try {
+    const prompt = buildPrompt();
     preview.value = prompt;
+  } catch (e) {
+    console.error("Error in buildPrompt:", e);
+    preview.value =
+      "ERROR building prompt:\n" +
+      (e && e.message ? e.message : String(e));
   }
 }
 
-// --- helper: editable block (no scroll, grows with text) ---
+/* ---------------- Editable blocks so cards are live-editable ---------------- */
+
 function createEditableBlock(initialText, placeholder, onChange, extraClass) {
   const div = document.createElement("div");
   div.className = "ability-edit-block" + (extraClass ? " " + extraClass : "");
@@ -522,7 +508,7 @@ function createEditableBlock(initialText, placeholder, onChange, extraClass) {
   return div;
 }
 
-// --- Rendering ---
+/* ------------------------------ Rendering cards ---------------------------- */
 
 function renderCards(abilities, powerLevel) {
   const resultsBox = document.getElementById("results");
@@ -663,6 +649,8 @@ function renderCards(abilities, powerLevel) {
   });
 }
 
+/* ------------------------------ Rendering table ---------------------------- */
+
 function renderTable(abilities, powerLevel) {
   const resultsBox = document.getElementById("results");
   if (!resultsBox) return;
@@ -731,7 +719,7 @@ function renderAbilitiesView() {
   }
 }
 
-// --- Copy helpers ---
+/* ------------------------------- Copy helpers ------------------------------ */
 
 function formatAbilityText(ability, powerLevel) {
   const mech = ability.mechanics || {};
@@ -769,7 +757,7 @@ function copyAllAbilities() {
   navigator.clipboard?.writeText(text).catch(() => {});
 }
 
-// --- Download stat sheet as .txt ---
+/* ------------------------- Download stat sheet (.txt) ---------------------- */
 
 function downloadStatSheet() {
   const powerLevel =
@@ -790,7 +778,7 @@ function downloadStatSheet() {
   URL.revokeObjectURL(url);
 }
 
-// --- Saved sets (localStorage databank) ---
+/* -------------------- Saved sets (localStorage databank) ------------------- */
 
 function loadSavedSetsFromStorage() {
   try {
@@ -885,7 +873,7 @@ function handleDeleteSet() {
   select.value = "";
 }
 
-// --- Reroll a single ability ---
+/* ------------------------------ Reroll helpers ----------------------------- */
 
 async function rerollAbility(index) {
   if (!lastAbilities.length) return;
@@ -915,7 +903,6 @@ async function rerollAbility(index) {
   const statusText = document.getElementById("status-text");
   if (statusText) statusText.textContent = "Rerolling ability " + (index + 1) + "...";
 
-  // Make a copy so we can undo
   lastAbilitiesBeforeReroll = lastAbilities.map((a) => ({
     ...a,
     mechanics: { ...(a.mechanics || {}) }
@@ -970,7 +957,6 @@ async function rerollAbility(index) {
   }
 }
 
-// --- Undo last reroll ---
 function undoLastReroll() {
   if (!lastAbilitiesBeforeReroll) return;
   lastAbilities = lastAbilitiesBeforeReroll;
@@ -980,7 +966,7 @@ function undoLastReroll() {
   renderAbilitiesView();
 }
 
-// --- Randomizer helpers ---
+/* ----------------------------- Randomizer stuff ---------------------------- */
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -1002,7 +988,6 @@ function randomSample(array, count) {
 }
 
 function randomizeInputs() {
-  // optional: simple random theme/role
   const roles = [
     "Frontline bruiser",
     "Sniper",
@@ -1120,21 +1105,18 @@ function randomizeInputs() {
   if (charRole) charRole.value = randomChoice(roles);
   if (charTheme) charTheme.value = randomChoice(themes);
 
-  // Effect types
   const effectInputs = Array.from(
     document.querySelectorAll('input[name="effectTypes"]')
   );
   effectInputs.forEach((el) => (el.checked = false));
   randomSample(effectInputs, randomInt(1, 3)).forEach((el) => (el.checked = true));
 
-  // Fruit traits
   const fruitInputs = Array.from(
     document.querySelectorAll('input[name="fruitTraits"]')
   );
   fruitInputs.forEach((el) => (el.checked = false));
   randomSample(fruitInputs, randomInt(1, 3)).forEach((el) => (el.checked = true));
 
-  // Style mods (only if moderate+)
   if (uiComplexityLevel >= 1) {
     const styleInputs = Array.from(
       document.querySelectorAll('input[name="styleMods"]')
@@ -1143,7 +1125,6 @@ function randomizeInputs() {
     randomSample(styleInputs, randomInt(1, 3)).forEach((el) => (el.checked = true));
   }
 
-  // Combo focus (multi-select)
   const comboChecks = document.querySelectorAll('input[name="comboFocus"]');
   comboChecks.forEach((el) => (el.checked = false));
   const comboOptions = ["any", "single", "combo", "transformation", "awakening"];
@@ -1152,7 +1133,6 @@ function randomizeInputs() {
     if (chosenCombo.includes(el.value)) el.checked = true;
   });
 
-  // Number of abilities + package type
   const numInput = document.getElementById("num-abilities");
   const packageSelect = document.getElementById("ability-package");
   if (numInput && packageSelect) {
@@ -1169,14 +1149,12 @@ function randomizeInputs() {
     numInput.value = n;
   }
 
-  // Output style (moderate+)
   const styleSelect = document.getElementById("format-style");
   if (styleSelect && uiComplexityLevel >= 1) {
     const opts = ["stat-block", "minimal", "cinematic"];
     styleSelect.value = randomChoice(opts);
   }
 
-  // Mechanics detail + ability complexity (moderate+)
   const mechDetail = document.getElementById("mechanics-detail");
   const complexitySelect = document.getElementById("complexity-level");
   if (mechDetail && uiComplexityLevel >= 1) {
@@ -1186,13 +1164,11 @@ function randomizeInputs() {
     complexitySelect.value = randomChoice(["simple", "moderate", "complex"]);
   }
 
-  // Tone epic (moderate+)
   const toneEpic = document.getElementById("tone-epic");
   if (toneEpic && uiComplexityLevel >= 1) {
     toneEpic.checked = true;
   }
 
-  // Model choice (complex only)
   const modelChoice = document.getElementById("model-choice");
   if (modelChoice && uiComplexityLevel >= 2) {
     const models = ["gpt-4.1-mini", "gpt-4.1", "gpt-5.1"];
@@ -1202,13 +1178,11 @@ function randomizeInputs() {
   updatePromptPreview();
 }
 
-// --- Attach listeners once the DOM is ready ---
+/* ------------------------- DOMContentLoaded wiring ------------------------- */
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Apply initial UI complexity
   applyUIComplexity();
 
-  // Complexity selector change
   const uiComplexSelect = document.getElementById("ui-complexity");
   if (uiComplexSelect) {
     uiComplexSelect.addEventListener("change", () => {
@@ -1217,7 +1191,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Multi-character combo controls
   const enableMultiCombo = document.getElementById("enable-multi-combo");
   const addParticipantBtn = document.getElementById("add-participant-btn");
 
@@ -1225,7 +1198,6 @@ document.addEventListener("DOMContentLoaded", () => {
     enableMultiCombo.addEventListener("change", () => {
       const container = getOrCreateComboContainer();
       if (enableMultiCombo.checked && container && container.children.length === 0) {
-        // Start with 2 participants by default
         createParticipantCard();
         createParticipantCard();
       }
@@ -1240,7 +1212,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Initial power label (mobile-friendly)
   const powerInput = document.getElementById("power-level");
   const powerDisplay = document.getElementById("power-level-display");
   if (powerInput && powerDisplay) {
@@ -1268,17 +1239,14 @@ document.addEventListener("DOMContentLoaded", () => {
     powerInput.addEventListener("change", updatePowerUI);
   }
 
-  // Initial prompt fill
   updatePromptPreview();
 
-  // Rebuild the prompt anytime an input changes
   const inputs = document.querySelectorAll("input, textarea, select");
   inputs.forEach((el) => {
     el.addEventListener("input", updatePromptPreview);
     el.addEventListener("change", updatePromptPreview);
   });
 
-  // View toggle
   const cardsBtn = document.getElementById("view-cards-btn");
   const tableBtn = document.getElementById("view-table-btn");
   if (cardsBtn && tableBtn) {
@@ -1296,7 +1264,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Export / copy buttons
   const copyAllBtn = document.getElementById("copy-all-btn");
   if (copyAllBtn) {
     copyAllBtn.addEventListener("click", copyAllAbilities);
@@ -1312,19 +1279,16 @@ document.addEventListener("DOMContentLoaded", () => {
     printBtn.addEventListener("click", () => window.print());
   }
 
-  // Undo reroll
   const undoBtn = document.getElementById("undo-reroll-btn");
   if (undoBtn) {
     undoBtn.addEventListener("click", undoLastReroll);
   }
 
-  // Randomize button
   const randomizeBtn = document.getElementById("randomize-btn");
   if (randomizeBtn) {
     randomizeBtn.addEventListener("click", randomizeInputs);
   }
 
-  // Saved sets
   refreshSavedSetsDropdown();
 
   const saveSetBtn = document.getElementById("save-set-btn");
@@ -1342,15 +1306,28 @@ document.addEventListener("DOMContentLoaded", () => {
     deleteSetBtn.addEventListener("click", handleDeleteSet);
   }
 
-  // Generate button
   const generateBtn = document.getElementById("generate-btn");
   const statusText = document.getElementById("status-text");
 
   if (!generateBtn) return;
 
   generateBtn.addEventListener("click", async () => {
-    const prompt = buildPrompt();
-    document.getElementById("prompt-preview").value = prompt;
+    let prompt;
+    try {
+      prompt = buildPrompt();
+    } catch (e) {
+      console.error("Error in buildPrompt during Generate:", e);
+      const preview = document.getElementById("prompt-preview");
+      if (preview) {
+        preview.value =
+          "ERROR building prompt (see console): " +
+          (e && e.message ? e.message : String(e));
+      }
+      return;
+    }
+
+    const preview = document.getElementById("prompt-preview");
+    if (preview) preview.value = prompt;
 
     const modelChoice = document.getElementById("model-choice")?.value || "gpt-4.1-mini";
     lastModel = modelChoice;
