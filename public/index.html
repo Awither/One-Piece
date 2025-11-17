@@ -47,7 +47,7 @@
               <input
                 id="char-theme"
                 type="text"
-                placeholder="Devil fruit + vibe: sand logia, dragon zoan, red lightning, gravity-bending, etc."
+                placeholder="Red lightning, gravity-bending, sand logia, soul flames, etc."
               />
             </label>
             <label>
@@ -81,7 +81,7 @@
             <p class="hint">
               Basic: pick effect type, fruit type, number of abilities, power level. <br />
               Moderate: adds desired outcome and key options. <br />
-              Complex: shows every advanced control.
+              Complex: shows every advanced control, including multi-character combo attacks.
             </p>
           </div>
 
@@ -121,7 +121,8 @@
                 Reality-Bending (space, time, gravity, souls)
               </label>
             </div>
-            <label data-ui-min="0">
+            <!-- Always visible, even on Basic -->
+            <label>
               Extra Effect Notes
               <textarea
                 id="effect-notes"
@@ -183,7 +184,8 @@
                 Hybrid multi-fruit synergy (multiple powers combined)
               </label>
             </div>
-            <label data-ui-min="0">
+            <!-- Always visible, even on Basic -->
+            <label>
               Extra Fruit Notes
               <textarea
                 id="fruit-notes"
@@ -194,7 +196,7 @@
           </div>
 
           <!-- Outcome / Shape (Box C) -->
-          <div class="card" data-ui-min="0">
+          <div class="card" data-ui-min="1">
             <h2>
               C. Desired Outcome / Ability Shape
               <span
@@ -237,12 +239,12 @@
                 Debuff / Weakening (reduce stats, impose conditions)
               </label>
               <label>
-                <input type="checkbox" name="styleMods" value="Explosion" />
-                Explosion / Burst (big AoE damage)
+                <input type="checkbox" name="styleMods" value="High Damage" />
+                High Damage / Burst Focus (single huge hit or massive total damage)
               </label>
               <label>
-                <input type="checkbox" name="styleMods" value="High Damage" />
-                High Damage (single-target or small-area nukes)
+                <input type="checkbox" name="styleMods" value="Explosion" />
+                Explosion / Burst (big AoE damage)
               </label>
               <label>
                 <input type="checkbox" name="styleMods" value="Battlefield Control" />
@@ -253,6 +255,7 @@
                 Signature Finisher (big named move, ultimate)
               </label>
             </div>
+            <!-- Always visible -->
             <label>
               Outcome / Effect Notes
               <textarea
@@ -263,20 +266,24 @@
             </label>
           </div>
 
-          <!-- Combo focus + explanation -->
+          <!-- Combo focus + explanation (multi-select) -->
           <div class="card" data-ui-min="1">
             <h2>
               Combo Focus
               <span
                 class="help-icon"
-                title="What kind of devil fruit combo style these abilities should lean into. You can pick multiple."
+                title="What kind of devil fruit combo style these abilities should lean into."
                 >?</span
               >
             </h2>
             <p class="hint">
-              Pick one or more combo styles to emphasize. Leave everything unchecked to let the AI decide freely.
+              You can pick more than one. If you leave everything empty, the AI can choose any style that fits.
             </p>
             <div class="checkbox-grid">
+              <label>
+                <input type="checkbox" name="comboFocus" value="any" />
+                Any style that fits (single fruit or combos)
+              </label>
               <label>
                 <input type="checkbox" name="comboFocus" value="single" />
                 Single-fruit style techniques
@@ -299,6 +306,31 @@
               Include a short <strong>combo logic</strong> note in the output (how the fruits interact).
             </label>
           </div>
+
+          <!-- Multi-character combo (Complex only) -->
+          <div class="card" data-ui-min="2">
+            <h2>
+              Multi-Character Combo (Complex Only)
+              <span
+                class="help-icon"
+                title="Build combo attacks that require 2+ characters working together. These should hit harder than all of their solo moves combined."
+                >?</span
+              >
+            </h2>
+            <label class="checkbox-inline">
+              <input type="checkbox" id="enable-multi-combo" />
+              Enable multi-character combo attack builder
+            </label>
+            <p class="hint">
+              Describe each participant and what they bring (devil fruits, weapons, support, setup). The AI will
+              build abilities that assume a coordinated team attack that’s stronger than using their powers
+              separately.
+            </p>
+            <div id="combo-participants-container" class="combo-participants"></div>
+            <button type="button" id="add-participant-btn" class="chip small">
+              + Add Participant
+            </button>
+          </div>
         </section>
 
         <!-- RIGHT: Prompt + Output -->
@@ -306,8 +338,7 @@
           <div class="card">
             <h2>Prompt Preview (auto-built)</h2>
             <p class="hint">
-              This is exactly what gets sent to ChatGPT. You can copy it if you want to reuse or
-              tweak manually.
+              This is exactly what gets sent to ChatGPT. You can copy it if you want to reuse or tweak manually.
             </p>
             <textarea id="prompt-preview" readonly rows="14"></textarea>
           </div>
@@ -326,11 +357,11 @@
                   <li><strong>3:</strong> DC 7–9. Weak but useful. 1–2 dice + minor rider or small control.</li>
                   <li><strong>4:</strong> DC 9–11. Solid low-tier move. 2–3 dice, small area or moderate utility.</li>
                   <li><strong>5:</strong> DC 11–13. Standard PC-level ability. 3–4 dice, decent effect.</li>
-                  <li><strong>6:</strong> DC 13–16. Strong PC or elite enemy move. 4–5 dice or strong control.</li>
+                  <li><strong>6:</strong> DC 13–16. Strong PC / elite enemy move. 4–5 dice or strong control.</li>
                   <li><strong>7:</strong> DC 16–20. Boss-tier. 6–8 dice, big impact, clear drawback (HP cost, limited uses, etc.).</li>
                   <li><strong>8:</strong> DC 20–23. Very high. 8–10+ dice or large area with strong conditions; serious drawback.</li>
                   <li><strong>9:</strong> DC 24–28. Mythic-level. Can do 100+ total damage, large area, multiple riders and lasting effects; heavy drawback.</li>
-                  <li><strong>10:</strong> DC 26–32. Godlike / reality-warping. Encounter-or arc-defining move with huge damage, massive area, multiple conditions and terrain changes; massive drawback.</li>
+                  <li><strong>10:</strong> DC 26–32. Godlike / reality-warping. Encounter- or arc-defining move with huge damage, massive area, multiple conditions and terrain changes; massive drawback.</li>
                 </ul>
               </div>
             </details>
@@ -440,16 +471,16 @@
 
             <!-- Preferred DC -->
             <label data-ui-min="2">
-              Preferred DC (optional, guideline)
+              Preferred DC (optional, strict override)
               <span
                 class="help-icon"
-                title="If you care about a specific DC or formula, put it here. Otherwise it’s chosen from the power ladder."
+                title="If you put a single number here (e.g. 30), the AI should keep save DCs at that value or at most 1 lower (29–30 only). Otherwise, DCs are picked from the power ladder."
                 >?</span
               >
               <input
                 id="preferred-dc"
                 type="text"
-                placeholder="e.g. 18 or 8 + proficiency + CHA"
+                placeholder="e.g. 30 or 8 + proficiency + CHA"
               />
             </label>
 
@@ -480,7 +511,8 @@
               <input type="checkbox" id="tone-epic" checked />
               Make the tone epic and anime-cinematic, but keep mechanics usable at the table.
             </label>
-            <label data-ui-min="0">
+            <!-- Always visible now -->
+            <label>
               Extra Output Notes
               <textarea
                 id="output-notes"
@@ -529,13 +561,14 @@
             </div>
 
             <p class="hint reroll-hint">
-              Reroll = new ability with the same inputs &amp; power level, but a different idea.
+              Reroll = new ability with the same inputs &amp; power level, but a different idea. You can
+              also edit any ability card directly: name, role, DC, damage, etc.
             </p>
 
             <div id="results" class="results-box">
               <p class="hint">
-                Each generated ability will show up in its own card with: name, role, summary, cinematic
-                description, and key mechanics (range, DC, damage, effect). Switch between card and
+                Each generated ability will show up in its own editable card with: name, role, summary,
+                cinematic description, and key mechanics (range, DC, damage, effect). Switch between card and
                 table view above.
               </p>
             </div>
