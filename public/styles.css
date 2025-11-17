@@ -294,6 +294,7 @@ input[type="checkbox"] {
   opacity: 0.7;
 }
 
+/* Specific card sections using editable blocks */
 .ability-card-summary {
   margin-top: 4px;
 }
@@ -302,6 +303,7 @@ input[type="checkbox"] {
   margin-top: 4px;
 }
 
+/* Mechanics grid */
 .ability-card-mech {
   margin-top: 6px;
   font-size: 0.78rem;
@@ -321,6 +323,20 @@ input[type="checkbox"] {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--text-muted);
+}
+
+/* Editable mechanic values: multi-line, wrap, never scroll */
+.ability-card-mech-value {
+  font-size: 0.78rem;
+  padding: 3px 6px;
+  border-radius: 6px;
+  border: 1px solid #1f2937;
+  background: #020617;
+  color: var(--text-primary);
+  min-height: 20px;
+  outline: none;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 /* Combo logic text */
