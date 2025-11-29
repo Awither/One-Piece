@@ -1,0 +1,596 @@
+:root {
+  --bg: #05060a;
+  --bg-elevated: #10121a;
+  --border-subtle: #25293a;
+  --accent: #f97316;
+  --accent-soft: rgba(249, 115, 22, 0.1);
+  --text-primary: #f9fafb;
+  --text-muted: #9ca3af;
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #111827 0, #020617 55%);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+.app-root {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 12px 16px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.app-header {
+  text-align: center;
+  padding: 12px 8px 4px;
+}
+
+.app-header h1 {
+  margin: 0 0 6px;
+  letter-spacing: 0.05em;
+  font-size: 1.6rem;
+}
+
+.app-header p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.app-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  background: linear-gradient(145deg, #020617, #020617, #030712);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  padding: 12px 12px 10px;
+  box-shadow: var(--shadow-soft);
+}
+
+.card h2 {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+}
+
+.hint {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 4px 10px;
+  margin-bottom: 6px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+label input[type="text"],
+label input[type="number"],
+label select,
+label textarea {
+  font: inherit;
+  border-radius: var(--radius-md);
+  border: 1px solid #1f2937;
+  background: #020617;
+  color: var(--text-primary);
+  padding: 6px 8px;
+  outline: none;
+}
+
+label textarea {
+  resize: vertical;
+}
+
+label input[type="text"]:focus,
+label input[type="number"]:focus,
+label select:focus,
+label textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-soft);
+}
+
+.checkbox-grid label {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+.checkbox-inline {
+  margin-top: 6px;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Help icons */
+.help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 1px solid #4b5563;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  cursor: help;
+}
+
+/* Power level display */
+.power-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.power-level-display {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+
+#prompt-preview {
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid #1f2937;
+  background: #020617;
+  color: var(--text-primary);
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  font-size: 0.8rem;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+/* Power reference */
+.power-ref summary {
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.power-ref-body {
+  margin-top: 8px;
+}
+
+.power-ref-list {
+  padding-left: 18px;
+  margin: 4px 0;
+  font-size: 0.78rem;
+}
+
+/* Results container – wrapper */
+.results-box {
+  padding: 0;
+  border: none;
+  background: transparent;
+  min-height: 0;
+  white-space: normal;
+}
+
+/* Reroll hint */
+.reroll-hint {
+  margin-bottom: 6px;
+}
+
+/* Grid of ability cards */
+.ability-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+/* Individual ability card */
+.ability-card {
+  border-radius: var(--radius-md);
+  border: 1px solid #1f2937;
+  background: #020617;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 150px;
+}
+
+.ability-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.ability-card-title-input {
+  font-size: 0.98rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid #1f2937;
+  background: #020617;
+  color: var(--text-primary);
+  padding: 3px 6px;
+}
+
+.ability-card-tag {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid #1f2937;
+  background: rgba(249, 115, 22, 0.06);
+  color: var(--text-muted);
+}
+
+.ability-edit-input {
+  font-size: 0.78rem;
+  border-radius: 6px;
+  border: 1px solid #1f2937;
+  background: #020617;
+  color: var(--text-primary);
+  padding: 3px 6px;
+}
+
+.ability-role-input {
+  margin-top: 4px;
+}
+
+/* Editable blocks (not scrollable) */
+.ability-edit-block {
+  font-size: 0.8rem;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid #1f2937;
+  background: #020617;
+  min-height: 20px;
+  outline: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.ability-edit-block:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+/* Specific card sections using editable blocks */
+.ability-card-summary {
+  margin-top: 4px;
+}
+
+.ability-card-description {
+  margin-top: 4px;
+}
+
+/* Mechanics grid */
+.ability-card-mech {
+  margin-top: 6px;
+  font-size: 0.78rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 4px 12px;
+}
+
+.ability-card-mech-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ability-card-mech-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+/* Editable mechanic values: multi-line, wrap, never scroll */
+.ability-card-mech-value {
+  font-size: 0.78rem;
+  padding: 3px 6px;
+  border-radius: 6px;
+  border: 1px solid #1f2937;
+  background: #020617;
+  color: var(--text-primary);
+  min-height: 20px;
+  outline: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Combo logic text */
+.ability-card-combo-logic {
+  margin-top: 4px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Small inline actions inside card */
+.ability-card-actions {
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Combo participant cards */
+.combo-participant-card {
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid #1f2937;
+  background: #020617;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.combo-participant-header {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.combo-participant-header input {
+  flex: 1;
+}
+
+.combo-participant-row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 4px;
+}
+
+.combo-remove-btn {
+  border-radius: 999px;
+  border: 1px solid #374151;
+  padding: 3px 8px;
+  font-size: 0.7rem;
+  background: #111827;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+/* Toolbar for view + exports */
+.results-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 6px;
+}
+
+.results-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Saved sets bar */
+.saved-toolbar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.saved-toolbar select {
+  min-width: 160px;
+}
+
+/* Reusable chip-style buttons */
+.chip {
+  border-radius: 999px;
+  border: 1px solid #374151;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  background: #020617;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chip.small {
+  padding: 3px 8px;
+  font-size: 0.76rem;
+}
+
+.chip.subtle {
+  opacity: 0.8;
+}
+
+.chip.active {
+  border-color: var(--accent);
+  background: rgba(249, 115, 22, 0.1);
+}
+
+.chip:hover {
+  border-color: var(--accent);
+}
+
+.chip[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Table view */
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.results-table th,
+.results-table td {
+  border: 1px solid #1f2937;
+  padding: 4px 6px;
+}
+
+.results-table th {
+  text-align: left;
+  background: #020617;
+  color: var(--text-muted);
+}
+
+/* Generate button + status */
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+#generate-btn {
+  border-radius: 999px;
+  border: none;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: radial-gradient(circle at top left, #fed7aa 0, #f97316 40%, #c2410c 100%);
+  color: #111827;
+  box-shadow: 0 12px 28px rgba(248, 113, 22, 0.35);
+  transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, filter 0.12s ease-out;
+}
+
+#generate-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 40px rgba(248, 113, 22, 0.42);
+  filter: brightness(1.05);
+}
+
+#generate-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 10px 20px rgba(248, 113, 22, 0.3);
+  filter: brightness(0.97);
+}
+
+#status-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.app-footer {
+  text-align: center;
+  margin-top: 4px;
+}
+
+.app-footer small {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 800px) {
+  .app-root {
+    padding: 8px 10px 24px;
+  }
+
+  .app-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .card {
+    padding: 10px 10px 8px;
+  }
+
+  .field-grid,
+  .checkbox-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ability-card-mech {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .combo-participant-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Print styles for PDF */
+@media print {
+  body {
+    background: #ffffff;
+  }
+
+  .app-root {
+    max-width: none;
+    padding: 0;
+  }
+
+  .app-header,
+  .panel-inputs,
+  .card:nth-of-type(1),
+  .card:nth-of-type(2),
+  .results-toolbar,
+  .saved-toolbar,
+  #status-text {
+    display: none !important;
+  }
+
+  .panel-output {
+    grid-column: 1 / -1;
+  }
+
+  .card {
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .ability-card,
+  .results-table {
+    page-break-inside: avoid;
+  }
+}
