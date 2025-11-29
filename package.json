@@ -1,9 +1,0 @@
-{
-  "name": "devil-fruit-ability-builder",
-  "version": "1.0.0",
-  "description": "One-page devil-fruit-based DnD devil fruit ability generator",
-  "main": "index.js",
-  "dependencies": {
-    "openai": "^4.80.0"
-  }
-}
