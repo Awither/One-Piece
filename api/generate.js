@@ -1,3 +1,4 @@
+// api/generate.js
 const OpenAI = require("openai");
 
 // Create client using the secret from Vercel
